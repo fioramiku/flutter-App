@@ -1,0 +1,8 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/windows",
+    "launch": {
+    
+        "update.channel": "none",
+        "editor.parameterHints": false
+    }
+}
