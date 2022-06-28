@@ -38,7 +38,7 @@ class _WorkroadState extends State<Workroad> {
                         Container(
                           width: 20,
                           decoration: BoxDecoration(
-                              color: Colors.blue, shape: BoxShape.circle),
+                              color: state.mclock[index].color, shape: BoxShape.circle),
                         ),
                         SizedBox(
                           width: 10,

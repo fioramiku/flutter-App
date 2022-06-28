@@ -171,21 +171,47 @@ class Clock extends CustomPainter {
     }
 
     void BuildPaint() {
+      int lenght = models.length;
+      int i = lenght;
+
       for (models_clock element in models) {
-        Paint paint = Paint()..color = clockcolor[1];
+        var radiuscircle = ((radius / 2) / lenght) * i + radius / 2;
+        Paint paint = Paint()..color = element.color;
         if (element.starttime.minute == element.endtime.minute &&
             element.starttime.hour == element.endtime.hour) {
-          canvas.drawLine(convert(angle:-caltime(time: element.starttime) + timenow() + startpos  , radius: radius, center: center), center, paintline);
         } else {
           canvas.drawArc(
               Rect.fromCenter(
-                  center: center, width: radius * 2, height: radius * 2),
+                  center: center,
+                  width: radiuscircle * 2,
+                  height: radiuscircle * 2),
               -caltime(time: element.starttime) + timenow() + startpos,
               -checkclockvalue(
                   starttime: element.starttime, endtime: element.endtime),
               true,
               paint);
+          i -= 1;
         }
+
+      for(models_clock element in models){
+        
+        if (element.starttime.minute == element.endtime.minute &&
+            element.starttime.hour == element.endtime.hour) {
+              Paint paint = Paint()..color = element.color..strokeWidth=3;
+  
+        canvas.drawLine(
+              convert(
+                  angle:
+                      -caltime(time: element.starttime) + timenow() + startpos,
+                  radius: radius,
+                  center: center),
+              center,
+              paint);
+          lenght -= 1;
+          i -= 1;
+          
+        }
+      }
       }
     }
 
@@ -218,7 +244,6 @@ class Clock extends CustomPainter {
     BuildPaint();
     BuildLine(dot: 10);
   }
-
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {

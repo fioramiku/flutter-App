@@ -5,8 +5,13 @@ class models_clock extends Equatable {
   final TimeOfDay starttime;
   final TimeOfDay endtime;
   final String title;
-  models_clock({required this.starttime,required this.title,required this.endtime});
+  final Color color;
+  models_clock(
+      {required this.starttime,
+      required this.title,
+      required this.endtime,
+      required this.color});
 
   @override
-  List<Object> get props => [starttime,endtime,title];
+  List<Object> get props => [starttime, endtime, title, color];
 }

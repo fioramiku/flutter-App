@@ -24,7 +24,7 @@ class Inputwork extends StatelessWidget {
       builder: (context, state) {
         TimeOfDay BegintimeOfDay = TimeOfDay.now();
         TimeOfDay EndtimeOfDay = TimeOfDay.now();
-        Color selectColor;
+        Color selectColor = Colors.red;
         Future<TimeOfDay> _selectTime(
             BuildContext context, String helptext) async {
           final TimeOfDay? timeOfDay = await showTimePicker(
@@ -40,7 +40,7 @@ class Inputwork extends StatelessWidget {
           }
         }
 
-        Color _selectColor() {
+        void _selectColor() {
           Color? colors;
           showDialog(
               context: context,
@@ -49,13 +49,15 @@ class Inputwork extends StatelessWidget {
                   title: Text("Pick Color"),
                   content: SingleChildScrollView(
                       child: BlockPicker(
+                        
                           pickerColor: Colors.red,
                           onColorChanged: (Color color) {
-                            colors = color;
+                            selectColor = color;
                           })),
                   actions: [
                     TextButton(
                         onPressed: () {
+                          log(selectColor.toString());
                           Navigator.of(context).pop();
                         },
                         child: Text("Pick"))
@@ -63,7 +65,7 @@ class Inputwork extends StatelessWidget {
                 );
               });
 
-          return colors ?? Colors.red;
+          
         }
 
         return Container(
@@ -82,15 +84,19 @@ class Inputwork extends StatelessWidget {
                           color: Colors.grey, fontWeight: FontWeight.w200),
                       controller: contitle,
                       decoration:
-                          InputDecoration(labelText: "Title", filled: true),
+                          InputDecoration(labelText: "Title", filled: true,),
                     ),
                     Row(
                       children: [
                         IconButton(
                             onPressed: () {
-                              selectColor = _selectColor();
+                              _selectColor();
+                              
                             },
-                            icon: Icon(Icons.color_lens)),
+                            icon: Icon(
+                              Icons.color_lens,
+                              
+                            )),
                         IconButton(
                             onPressed: () async {
                               BegintimeOfDay =
@@ -108,7 +114,8 @@ class Inputwork extends StatelessWidget {
                                     newmodels: models_clock(
                                         title: contitle.text,
                                         starttime: BegintimeOfDay,
-                                        endtime: EndtimeOfDay)));
+                                        endtime: EndtimeOfDay,
+                                        color: selectColor)));
                                 state.alreadycheck();
                                 return Navigator.pop(context);
                               } else {
