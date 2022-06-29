@@ -1,4 +1,5 @@
 import 'package:abc/database/base_data_tool.dart';
+import 'package:abc/views/chatbot/Chatbot_page.dart';
 
 import 'package:abc/views/home_main.dart';
 
@@ -61,7 +62,7 @@ class _Nagative_buttonState extends State<Nagative_button> {
   static int selectIndex = 0;
 
  
-  List<dynamic> page = [Home_page(), chat_page(), Me_page()];
+  List<dynamic> page = [Home_page(), chat_page(), Me_page(),Chatbot()];
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +85,7 @@ class _Nagative_buttonState extends State<Nagative_button> {
                 function: () {
                   print('find');
                 })
+               
           ]),
       Appbar_Change(
           title: "Plan",
@@ -97,7 +99,7 @@ class _Nagative_buttonState extends State<Nagative_button> {
                 return Setting_pagena();
               }));
             })
-      ])
+      ]),Appbar_Change(title: "chatbot")
     ];
 
     return Scaffold(
@@ -112,6 +114,7 @@ class _Nagative_buttonState extends State<Nagative_button> {
           BottomNavigationBarItem(
               icon: Icon(Icons.chat_outlined), label: "Chat"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Me"),
+          BottomNavigationBarItem(icon: Icon(Icons.chat),label: "chatbot")
         ],
         currentIndex: selectIndex,
       ),

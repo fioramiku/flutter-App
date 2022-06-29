@@ -52,6 +52,7 @@ dependencies:
   get: ^4.6.5
   hydrated_bloc: ^8.1.0
   flutter_colorpicker: ^1.0.3
+  bubble: ^1.2.1
   
   
 

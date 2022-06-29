@@ -177,9 +177,8 @@ class Clock extends CustomPainter {
       for (models_clock element in models) {
         var radiuscircle = ((radius / 2) / lenght) * i + radius / 2;
         Paint paint = Paint()..color = element.color;
-        if (element.starttime.minute == element.endtime.minute &&
-            element.starttime.hour == element.endtime.hour) {
-        } else {
+        if (element.starttime.minute != element.endtime.minute ||
+            element.starttime.hour != element.endtime.hour) {
           canvas.drawArc(
               Rect.fromCenter(
                   center: center,
@@ -191,27 +190,28 @@ class Clock extends CustomPainter {
               true,
               paint);
           i -= 1;
-        }
-
-      for(models_clock element in models){
-        
-        if (element.starttime.minute == element.endtime.minute &&
-            element.starttime.hour == element.endtime.hour) {
-              Paint paint = Paint()..color = element.color..strokeWidth=3;
-  
-        canvas.drawLine(
-              convert(
-                  angle:
-                      -caltime(time: element.starttime) + timenow() + startpos,
-                  radius: radius,
-                  center: center),
-              center,
-              paint);
+        } else {
           lenght -= 1;
           i -= 1;
-          
         }
-      }
+        for (models_clock element in models) {
+          if (element.starttime.minute == element.endtime.minute &&
+              element.starttime.hour == element.endtime.hour) {
+            Paint paint = Paint()
+              ..color = element.color
+              ..strokeWidth = 3;
+
+            canvas.drawLine(
+                convert(
+                    angle: -caltime(time: element.starttime) +
+                        timenow() +
+                        startpos,
+                    radius: radius,
+                    center: center),
+                center,
+                paint);
+          }
+        }
       }
     }
 
