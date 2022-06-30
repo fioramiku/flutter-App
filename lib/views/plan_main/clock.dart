@@ -57,6 +57,7 @@ class _ClockplanState extends State<Clockplan> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+   
     DateTime nowtime = DateTime.now();
     return Container(
         height: MediaQuery.of(context).size.height * 0.3,
@@ -67,7 +68,7 @@ class _ClockplanState extends State<Clockplan> with TickerProviderStateMixin {
               builder: (context, state) {
                 return CustomPaint(
                   painter: Clock(
-                      models: state.mclock,
+                      models: state.mclock!,
                       startpos: animation.value,
                       now: nowtime),
                   child: Container(),
@@ -139,7 +140,7 @@ class Clock extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
     var paintcirclebackground = Paint()..color = primarycolor;
-    double checkclockvalue(
+    double checkclockvalue(  //length of clock
         {required TimeOfDay starttime, required TimeOfDay endtime}) {
       if (starttime.hour > endtime.hour) {
         return ((2 * math.pi) -

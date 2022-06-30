@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:abc/views/plan_main/bloc/timemanage_bloc.dart';
+import 'package:abc/views/plan_main/models/time_models.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
@@ -18,60 +19,89 @@ class Workroad extends StatefulWidget {
 class _WorkroadState extends State<Workroad> {
   @override
   Widget build(BuildContext context) {
+    log("rebuild");
     return BlocBuilder<TimemanageBloc, TimemanageState>(
       builder: (context, state) {
-        if (state.checkstate) {
-          return ListView.separated(
-            separatorBuilder: ((context, index) => const Divider(
-                  height: 1,
-                )),
-            itemBuilder: ((context, index) {
-              log("cardload");
-              return InkWell(
-                onTap: () {},
-                child: Container(
-                  height: 50,
-                  child: Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 20,
-                          decoration: BoxDecoration(
-                              color: state.mclock[index].color, shape: BoxShape.circle),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Center(
-                          child: Column(
-                            children: [
-                              Text(
-                                "${state.mclock[index].starttime}",
-                                style: TextStyle(fontSize: 12),
+        //calcute length
+        int makestream({required TimeOfDay positiontime}) {
+          final DateTime nowtime = DateTime.now();
+          final int nowsec =
+              nowtime.hour * 3600 + nowtime.minute * 60 + nowtime.second;
+          final int pointsec = state.con2min(timeOfDay: positiontime) * 60;
+          if (pointsec > nowsec) {
+            return (pointsec - nowsec);
+          } else if (pointsec < nowsec) {
+            return (86400 - nowsec + pointsec);
+          } else {
+            return 0;
+          }
+        }
+
+        final TimeOfDay now = TimeOfDay.now();
+
+        List<models_clock> uselist =
+            state.ordertime(models: state.mclock, now: now);
+
+        return ListView.separated(
+          separatorBuilder: ((context, index) => const Divider(
+                height: 1,
+              )),
+          itemBuilder: ((context, index) {
+            log(makestream(positiontime: uselist[0].starttime).toString());
+            //rebuild
+            Future.delayed(
+                Duration(
+                    seconds: makestream(positiontime: uselist[0].endtime)),
+                () {
+              log("future");
+              setState(() {
+                
+              });;
+            });
+            log("cardload");
+            return InkWell(
+              //input card
+              onTap: () {},
+              child: Container(
+                height: 50,
+                child: Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        decoration: BoxDecoration(
+                            color: uselist[index].color,
+                            shape: BoxShape.circle),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Center(
+                        child: Column(
+                          children: [
+                            Text(
+                              "${uselist[index].starttime}",
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            RichText(
+                              text: TextSpan(
+                                text: "${uselist[index].endtime}",
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 10),
                               ),
-                              RichText(
-                                text: TextSpan(
-                                  text: "${state.mclock[index].starttime}",
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 10),
-                                ),
-                              )
-                            ],
-                          ),
+                            )
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-            }),
-            itemCount: state.mclock.length,
-          );
-        } else {
-          log("end");
-          return Text("NoneData---");
-        }
+              ),
+            );
+          }),
+          itemCount: uselist.length,
+        );
       },
     );
   }

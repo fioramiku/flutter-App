@@ -16,3 +16,8 @@ class ChangeTimepicker extends TimemanageEvent {
   final TimeOfDay selecttime;
   ChangeTimepicker({required this.selecttime});
 }
+
+class Changeroad extends TimemanageEvent {
+  final bool b;
+  Changeroad({required this.b });
+}

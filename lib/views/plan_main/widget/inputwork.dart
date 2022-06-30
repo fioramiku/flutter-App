@@ -25,12 +25,12 @@ class Inputwork extends StatelessWidget {
         TimeOfDay BegintimeOfDay = TimeOfDay.now();
         TimeOfDay EndtimeOfDay = TimeOfDay.now();
         Color selectColor = Colors.red;
-        Future<TimeOfDay> _selectTime(
-            BuildContext context, String helptext) async {
+        Future<TimeOfDay> _selectTime(BuildContext context, String helptext,
+            TimeOfDay initialtime) async {
           final TimeOfDay? timeOfDay = await showTimePicker(
             helpText: helptext,
             context: context,
-            initialTime: TimeOfDay.now(),
+            initialTime: initialtime,
             initialEntryMode: TimePickerEntryMode.dial,
           );
           if (timeOfDay != null && timeOfDay != TimeOfDay.now()) {
@@ -49,7 +49,6 @@ class Inputwork extends StatelessWidget {
                   title: Text("Pick Color"),
                   content: SingleChildScrollView(
                       child: BlockPicker(
-                        
                           pickerColor: Colors.red,
                           onColorChanged: (Color color) {
                             selectColor = color;
@@ -64,8 +63,6 @@ class Inputwork extends StatelessWidget {
                   ],
                 );
               });
-
-          
         }
 
         return Container(
@@ -83,26 +80,27 @@ class Inputwork extends StatelessWidget {
                       style: TextStyle(
                           color: Colors.grey, fontWeight: FontWeight.w200),
                       controller: contitle,
-                      decoration:
-                          InputDecoration(labelText: "Title", filled: true,),
+                      decoration: InputDecoration(
+                        labelText: "Title",
+                        filled: true,
+                      ),
                     ),
                     Row(
                       children: [
                         IconButton(
                             onPressed: () {
                               _selectColor();
-                              
                             },
                             icon: Icon(
                               Icons.color_lens,
-                              
                             )),
                         IconButton(
                             onPressed: () async {
+                              TimeOfDay initialtime = TimeOfDay.now();
                               BegintimeOfDay =
-                                  await _selectTime(context, "StartTime");
+                                  await _selectTime(context, "StartTime",initialtime);
                               EndtimeOfDay =
-                                  await _selectTime(context, "EndTime");
+                                  await _selectTime(context, "EndTime",BegintimeOfDay);
                               checkopenclock = true;
                             },
                             icon: Icon(Icons.av_timer)),

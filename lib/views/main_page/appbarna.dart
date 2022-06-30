@@ -31,8 +31,9 @@ AppBar buildWG({
         if (appbar[selectIndex].time_check) ...[
           Flexible(child: SizedBox(), fit: FlexFit.tight),
           StreamBuilder(
-            stream: Stream.periodic(const Duration(seconds: 1)),
+            stream: Stream.periodic(const Duration(seconds: 2)),
             builder: (context, snapshot) {
+              
               return Text(DateFormat('HH:mm:ss').format(DateTime.now()));
             },
           )

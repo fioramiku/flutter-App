@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:bubble/bubble.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,8 +17,8 @@ class Chatbot extends StatefulWidget {
 
 class _ChatbotState extends State<Chatbot> {
   final GlobalKey<AnimatedListState> _listkey = GlobalKey();
-  static  Uri BOT_URL = Uri(scheme: 'https',host:'mychatbotxux.herokuapp.com',path: '/bot' );
-  
+  static Uri BOT_URL =
+      Uri(scheme: 'https', host: 'mychatbotxux.herokuapp.com', path: '/bot');
 
   List<String> _data = [];
   TextEditingController _queryController = TextEditingController();
@@ -60,6 +61,7 @@ class _ChatbotState extends State<Chatbot> {
           BOT_URL,
           body: {"query": _queryController.text},
         )..then((response) {
+            log(response.headers.toString());
             Map<String, dynamic> data = jsonDecode(response.body);
             _insertSingleItem(data['response'] + "<bot>");
           });
