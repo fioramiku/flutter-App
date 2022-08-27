@@ -1,18 +1,160 @@
 part of 'timemanage_bloc.dart';
 
-class TimemanageState extends Equatable {
-  final List<models_clock> mclock;
-   bool checkstate; //rebuildroadmap
+class TimemanageState {
+  final DateTime selectday;
+  final LinkedHashMap<DateTime, List<models_clock>?>? mclock;
+  const TimemanageState({required this.selectday, this.mclock});
+  int con2min({required TimeOfDay timeOfDay}) {
+    int time = timeOfDay.hour * 60 + timeOfDay.minute;
+    return time;
+  }
+
+  TimemanageState copyWith(
+      { LinkedHashMap<DateTime, List<models_clock>?>? mclock,
+      required DateTime selectday}) {
+    return TimemanageState(mclock: mclock??this.mclock, selectday: selectday);
+  }
+
+  List<models_clock> ordertime(
+      {required List<models_clock> models, required TimeOfDay now}) {
+    List<models_clock> alreadylist = [];
+    List<models_clock> unfinishlist = [];
+
+    final int timenow = con2min(timeOfDay: now);
+    //+ mean pass - mean not pass
+
+    for (int i = 0; i < models.length; i++) {
+      int checkedtime = con2min(timeOfDay: models[i].starttime);
+      int checkedtime2 = con2min(timeOfDay: models[i].endtime);
+      int different1 = timenow - checkedtime;
+      int different2 = timenow - checkedtime2;
+      if ((different1 > 0 && different2 < 0) ||
+          (different1 > 0 && different2 > 0) ||
+          (different1 < 0 && different2 < 0) ||
+          (different1 < 0 && different2 > 0)) {
+        alreadylist.add(models[i]);
+        log("time${models[i].starttime}");
+      } else {
+        unfinishlist.add(models[i]);
+      }
+    }
+    //convert models time to sec
+    int dataset(
+      models_clock models,
+    ) {
+      int a = con2min(timeOfDay: models.starttime);
+      int check = a - timenow;
+      if (a < timenow) {
+        return 3600 - (check).abs();
+      } else {
+        return check;
+      }
+    }
+
+    alreadylist.sort(((a, b) => dataset(a).compareTo(dataset(b))));
+    unfinishlist.sort(((a, b) => dataset(a).compareTo(dataset(b))));
+
+    return [...unfinishlist, ...alreadylist];
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TimemanageState &&
+          runtimeType == other.runtimeType &&
+          mclock == other.mclock &&
+          selectday == other.selectday;
+
+  @override
+  int get hashCode => mclock.hashCode ^ selectday.hashCode;
+}
+
+  
+
+
+
+
+
+/*
+class TimeLoaded extends TimemanageState {
+  final DateTime selectday;
+  final LinkedHashMap<DateTime, List<models_clock>?> mclock;
+  const TimeLoaded(
+      {required this.selectday,
+      required this.mclock});
+
+  int con2min({required TimeOfDay timeOfDay}) {
+    int time = timeOfDay.hour * 60 + timeOfDay.minute;
+    return time;
+  }
+
+  TimeLoaded copyWith(
+      {required LinkedHashMap<DateTime, List<models_clock>?> mclock,required DateTime selectday}) {
+    return TimeLoaded(mclock:mclock, selectday: selectday);
+  }
+
+  List<models_clock> ordertime(
+      {required List<models_clock> models, required TimeOfDay now}) {
+    List<models_clock> alreadylist = [];
+    List<models_clock> unfinishlist = [];
+
+    final int timenow = con2min(timeOfDay: now);
+    //+ mean pass - mean not pass
+
+    for (int i = 0; i < models.length; i++) {
+      int checkedtime = con2min(timeOfDay: models[i].starttime);
+      int checkedtime2 = con2min(timeOfDay: models[i].endtime);
+      int different1 = timenow - checkedtime;
+      int different2 = timenow - checkedtime2;
+      if ((different1 > 0 && different2 < 0) ||
+          (different1 > 0 && different2 > 0) ||
+          (different1 < 0 && different2 < 0) ||
+          (different1 < 0 && different2 > 0)) {
+        alreadylist.add(models[i]);
+        log("time${models[i].starttime}");
+      } else {
+        unfinishlist.add(models[i]);
+      }
+    }
+    //convert models time to sec
+    int dataset(
+      models_clock models,
+    ) {
+      int a = con2min(timeOfDay: models.starttime);
+      int check = a - timenow;
+      if (a < timenow) {
+        return 3600 - (check).abs();
+      } else {
+        return check;
+      }
+    }
+
+    alreadylist.sort(((a, b) => dataset(a).compareTo(dataset(b))));
+    unfinishlist.sort(((a, b) => dataset(a).compareTo(dataset(b))));
+
+    return [...unfinishlist,...alreadylist];
+  }
+
+  @override
+  List<Object> get props => [mclock,selectday];
+}
+
+
+  final LinkedHashMap<DateTime, List<models_clock>?>? mclock;
+  final bool checkstate; //rebuildroadmap
   final TimeOfDay? selelecttime;
   final bool checkclock;
-
+  final DateTime? selectday;
+  
   TimemanageState(
-      {this.mclock=const <models_clock>[] ,
+      {this.mclock,
       this.checkstate = false,
       this.selelecttime,
-      this.checkclock = false});
+      this.checkclock = false,
+      this.selectday});
 
-  TimemanageState copyWith({required List<models_clock> mclock}) {
+  TimemanageState copyWith(
+      {required LinkedHashMap<DateTime, List<models_clock>?> mclock}) {
     return TimemanageState(mclock: mclock, checkstate: true);
   }
 
@@ -24,12 +166,8 @@ class TimemanageState extends Equatable {
     return TimemanageState(selelecttime: selelecttime);
   }
 
-  List<models_clock> addlist({required models_clock z}) {
-    List<models_clock> a = [...mclock];
-    a.add(z);
-    return a;
-  }
-
+  ///////-----
+ 
   int con2min({required TimeOfDay timeOfDay}) {
     int time = timeOfDay.hour * 60 + timeOfDay.minute;
     return time;
@@ -41,25 +179,43 @@ class TimemanageState extends Equatable {
     List<models_clock> unfinishlist = [];
 
     final int timenow = con2min(timeOfDay: now);
+    //+ mean pass - mean not pass
 
     for (int i = 0; i < models.length; i++) {
-      int checkedtime = con2min(timeOfDay: models[i].endtime);
-      if (timenow > checkedtime) {
+      int checkedtime = con2min(timeOfDay: models[i].starttime);
+      int checkedtime2 = con2min(timeOfDay: models[i].endtime);
+      int different1 = timenow - checkedtime;
+      int different2 = timenow - checkedtime2;
+      if ((different1 > 0 && different2 < 0) ||
+          (different1 > 0 && different2 > 0) ||
+          (different1 < 0 && different2 < 0) ||
+          (different1 < 0 && different2 > 0)) {
         alreadylist.add(models[i]);
+        log("time${models[i].starttime}");
       } else {
         unfinishlist.add(models[i]);
       }
     }
-    alreadylist.sort(((a, b) => con2min(timeOfDay: a.endtime)
-        .compareTo(con2min(timeOfDay: b.endtime))));
-    unfinishlist.sort(((a, b) => con2min(timeOfDay: a.endtime)
-        .compareTo(con2min(timeOfDay: b.endtime))));
-    unfinishlist.addAll(alreadylist);
+    //convert models time to sec
+    int dataset(
+      models_clock models,
+    ) {
+      int a = con2min(timeOfDay: models.starttime);
+      int check = a - timenow;
+      if (a < timenow) {
+        return 3600 - (check).abs();
+      } else {
+        return check;
+      }
+    }
+
+    alreadylist.sort(((a, b) => dataset(a).compareTo(dataset(b))));
+    unfinishlist.sort(((a, b) => dataset(a).compareTo(dataset(b))));
 
     return unfinishlist;
   }
 
-  TimemanageState CompareTime(
+  TimemanageState compareTime(
       {required TimeOfDay timecompare, required TimeOfDay timenow}) {
     if (con2min(timeOfDay: timecompare) > con2min(timeOfDay: timenow)) {
       return TimemanageState(checkstate: true);
@@ -68,15 +224,15 @@ class TimemanageState extends Equatable {
     }
   }
 
-  TimemanageState Changeroad({bool? b}) {
-    return TimemanageState(checkstate: b?? true);
+  TimemanageState changeRoad({required bool b}) {
+    return TimemanageState(checkstate: b, mclock: mclock);
   }
 
-  @override
-  List<Object> get props => [mclock];
-}
-
-class TimemanageInitial extends TimemanageState {
-  TimemanageInitial({List<models_clock>? mclock})
-      : super();
-}
+  //con2Likedhastmap
+  LinkedHashMap<DateTime, List<models_clock>?> getmap() {
+    LinkedHashMap<DateTime, List<models_clock>?> linkmap = LinkedHashMap(
+        equals: (DateTime a, DateTime b) => isSameDay(a, b), hashCode: (e) => 1)
+      ..addAll(mclock!);
+    return linkmap;
+  }
+*/

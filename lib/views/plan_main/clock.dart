@@ -1,14 +1,9 @@
 import 'dart:developer';
 import 'dart:math' as math;
-
 import 'package:abc/views/plan_main/bloc/timemanage_bloc.dart';
 import 'package:abc/views/plan_main/models/time_models.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../database/base_data_tool.dart';
 
 class Clockplan extends StatefulWidget {
@@ -21,8 +16,9 @@ class Clockplan extends StatefulWidget {
 class _ClockplanState extends State<Clockplan> with TickerProviderStateMixin {
   late Animation<double> animation;
   late AnimationController controller;
-  static late double startpos;
-  Tween<double> _rotationTween = Tween(begin: 0, end: (2) * math.pi);
+  
+  final Tween<double> _rotationTween = Tween(begin: 0, end: (2) * math.pi);
+  late DateTime _selectday;
 
   @override
   void initState() {
@@ -30,7 +26,7 @@ class _ClockplanState extends State<Clockplan> with TickerProviderStateMixin {
 
     controller = AnimationController(
       vsync: this,
-      duration: Duration(days: 1),
+      duration: const Duration(days: 1),
     );
 
     animation = _rotationTween.animate(controller)
@@ -57,22 +53,25 @@ class _ClockplanState extends State<Clockplan> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-   
     DateTime nowtime = DateTime.now();
-    return Container(
+    return SizedBox(
         height: MediaQuery.of(context).size.height * 0.3,
         width: MediaQuery.of(context).size.width * 0.7,
         child: Stack(
           children: [
             BlocBuilder<TimemanageBloc, TimemanageState>(
               builder: (context, state) {
-                return CustomPaint(
-                  painter: Clock(
-                      models: state.mclock!,
-                      startpos: animation.value,
-                      now: nowtime),
-                  child: Container(),
-                );
+                
+                  _selectday = state.selectday;
+
+                  return CustomPaint(
+                    painter: Clock(
+                        models: state.mclock![_selectday] ?? [],
+                        startpos: animation.value,
+                        now: nowtime),
+                    child: Container(),
+                  );
+              
               },
             ),
             Center(
@@ -115,7 +114,7 @@ class Clock extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    List<Color> clockcolor = [Color(0xFFfc9d9a), Color(0xFF83Af9b)];
+    const List<Color> clockcolor = [Color(0xFFfc9d9a), Color(0xFF83Af9b)];
     var centerX = size.width / 2;
     var centerY = size.height / 2;
     var center = Offset(centerX, centerY);
@@ -133,21 +132,23 @@ class Clock extends CustomPainter {
       ..strokeWidth = 8
       ..style = PaintingStyle.stroke;
     var paintline = Paint()
-      ..color = Colors.red
-      ..strokeWidth = 3;
+      ..color = Color(0xFFF67280)
+      ..strokeWidth = 2;
     var paintcircleline = Paint()
       ..color = Colors.red
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
     var paintcirclebackground = Paint()..color = primarycolor;
-    double checkclockvalue(  //length of clock
-        {required TimeOfDay starttime, required TimeOfDay endtime}) {
+    double checkclockvalue(
+        //length of clock
+        {required TimeOfDay starttime,
+        required TimeOfDay endtime}) {
       if (starttime.hour > endtime.hour) {
         return ((2 * math.pi) -
             caltime(time: starttime) +
             caltime(time: endtime));
       } else if (starttime.hour == endtime.hour) {
-        if (starttime.minute > endtime.hourOfPeriod) {
+        if (starttime.minute > endtime.minute) {
           return ((2 * math.pi) -
               caltime(time: starttime) +
               caltime(time: endtime));
@@ -219,17 +220,9 @@ class Clock extends CustomPainter {
     void BuildLine({required int dot}) {
       canvas.drawLine(
           Offset(size.width / 2 - radius, size.height / 2), center, paintline);
-      canvas.drawCircle(Offset(size.width / 2 - radius, size.height / 2), 10,
-          paintcirclebackground);
-      canvas.drawArc(
-          Rect.fromCenter(
-              center: Offset(size.width / 2 - radius, size.height / 2),
-              width: 20,
-              height: 20),
-          0,
-          2 * math.pi,
-          false,
-          paintcircleline);
+      canvas.drawCircle(Offset(size.width / 2 - radius-5, size.height / 2), 8,
+          paintc1);
+     
     }
 
     ////////build

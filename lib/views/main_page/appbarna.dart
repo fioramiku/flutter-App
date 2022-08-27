@@ -29,10 +29,10 @@ AppBar buildWG({
       children: [
         Text(appbar[selectIndex].title),
         if (appbar[selectIndex].time_check) ...[
-          Flexible(child: SizedBox(), fit: FlexFit.tight),
+          const Flexible(child: SizedBox(), fit: FlexFit.tight),
           StreamBuilder(
-            stream: Stream.periodic(const Duration(seconds: 2)),
-            builder: (context, snapshot) {
+            stream: Stream.periodic(const Duration(seconds: 1)),
+            builder: (_,__) {
               
               return Text(DateFormat('HH:mm:ss').format(DateTime.now()));
             },

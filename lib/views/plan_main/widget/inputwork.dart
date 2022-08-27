@@ -3,9 +3,8 @@ import 'dart:developer';
 import 'package:abc/database/base_data_tool.dart';
 import 'package:abc/views/plan_main/bloc/timemanage_bloc.dart';
 import 'package:abc/views/plan_main/models/time_models.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -21,10 +20,11 @@ class Inputwork extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TimemanageBloc, TimemanageState>(
-      builder: (context, state) {
+        builder: (context, state) {
+      
         TimeOfDay BegintimeOfDay = TimeOfDay.now();
         TimeOfDay EndtimeOfDay = TimeOfDay.now();
-        Color selectColor = Colors.red;
+        Color selectColor = Color.fromRGBO(244, 67, 54, 1);
         Future<TimeOfDay> _selectTime(BuildContext context, String helptext,
             TimeOfDay initialtime) async {
           final TimeOfDay? timeOfDay = await showTimePicker(
@@ -97,10 +97,10 @@ class Inputwork extends StatelessWidget {
                         IconButton(
                             onPressed: () async {
                               TimeOfDay initialtime = TimeOfDay.now();
-                              BegintimeOfDay =
-                                  await _selectTime(context, "StartTime",initialtime);
-                              EndtimeOfDay =
-                                  await _selectTime(context, "EndTime",BegintimeOfDay);
+                              BegintimeOfDay = await _selectTime(
+                                  context, "StartTime", initialtime);
+                              EndtimeOfDay = await _selectTime(
+                                  context, "EndTime", BegintimeOfDay);
                               checkopenclock = true;
                             },
                             icon: Icon(Icons.av_timer)),
@@ -109,12 +109,13 @@ class Inputwork extends StatelessWidget {
                               if (formkey.currentState!.validate() &&
                                   checkopenclock) {
                                 context.read<TimemanageBloc>().add(Changeclock(
+                                    day: state.selectday,
                                     newmodels: models_clock(
                                         title: contitle.text,
                                         starttime: BegintimeOfDay,
                                         endtime: EndtimeOfDay,
                                         color: selectColor)));
-                                state.alreadycheck();
+
                                 return Navigator.pop(context);
                               } else {
                                 showDialog(
@@ -154,7 +155,8 @@ class Inputwork extends StatelessWidget {
                 ),
               )),
         );
-      },
+    
+      }
     );
   }
 }

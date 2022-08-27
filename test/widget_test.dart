@@ -1,36 +1,43 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:lottie/lottie.dart';
+import 'dart:collection';
+
+import 'package:equatable/equatable.dart';
 
 void main() {
-  runApp(Timeseparate_tool());
+  var z = {
+    2: [2]
+  };
+  var a = Man(
+      map: LinkedHashMap<int, List<int>>(
+          equals: (p0, p1) => p0 == p1, hashCode: (e) => 1)
+        ..addAll(z));
+  var b = Man(
+      map: LinkedHashMap()
+        ..addAll({
+          2: [3]
+        }));
+
+  var c = Man(
+      map: LinkedHashMap(equals: (p0, p1) => p0 == p1, hashCode: (e) => 1)
+        ..addAll({
+          2: [2]
+        }));
+  var d = LinkedHashMap<int, List<int>>(
+      equals: (p0, p1) => p0 == p1, hashCode: (e) => e+32);
+
+  d.addAll(z);
+  var t = Man(map: d);
+  print(t == a);
+  print(a.map);
+  print(a.hashCode);
+  print(t.hashCode);
+  print(t.map);
 }
 
-class Timeseparate_tool extends StatefulWidget {
-  const Timeseparate_tool({Key? key}) : super(key: key);
+class Man extends Equatable {
+  final LinkedHashMap<int, List<int>> map;
+  const Man({required this.map});
 
   @override
-  State<Timeseparate_tool> createState() => _Timeseparate_toolState();
-}
-
-class _Timeseparate_toolState extends State<Timeseparate_tool> {
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Row(
-        children: [
-          Stack(children: <Widget>[
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(3))),
-              child:
-                  Lottie.network("https://lottiefiles.com/23675-read-a-book"),
-            ),
-          ]),
-        ],
-      ),
-    );
-  }
+  // TODO: implement props
+  List<Object?> get props => [map];
 }

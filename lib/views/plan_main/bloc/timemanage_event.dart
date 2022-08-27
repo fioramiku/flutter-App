@@ -8,16 +8,18 @@ abstract class TimemanageEvent extends Equatable {
 }
 
 class Changeclock extends TimemanageEvent {
-  final models_clock newmodels;
-  Changeclock({required this.newmodels});
+  final models_clock? newmodels;
+  final DateTime day;
+  const Changeclock({this.newmodels, required this.day});
 }
 
-class ChangeTimepicker extends TimemanageEvent {
-  final TimeOfDay selecttime;
-  ChangeTimepicker({required this.selecttime});
+class Deleteclock extends TimemanageEvent {
+  final models_clock models;
+  final DateTime daySelect;
+  const Deleteclock({required this.models, required this.daySelect});
 }
 
-class Changeroad extends TimemanageEvent {
-  final bool b;
-  Changeroad({required this.b });
+class Changeday extends TimemanageEvent{
+  final DateTime focusday;
+  const Changeday({required this.focusday});
 }

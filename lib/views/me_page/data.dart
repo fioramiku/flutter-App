@@ -25,13 +25,13 @@ class Setting_pagena extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Setting"),
+          title: const Text("Setting"),
         ),
         body: BlocBuilder<ProfileBloc, ProfileState>(
           builder: (context, state) {
             final dynamic lastfile = state.image != null
                 ? FileImage(state.image!)
-                : AssetImage("assets/images/cover.png");
+                : const AssetImage("assets/images/cover.png");
             return Form(
               key: formkey,
               child: Column(
@@ -40,7 +40,7 @@ class Setting_pagena extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         CircleAvatar(
@@ -50,7 +50,7 @@ class Setting_pagena extends StatelessWidget {
                         ),
                         TextButton(
                           child: Container(
-                            child: Text("Change Image"),
+                            child:const Text("Change Image"),
                           ),
                           onPressed: () {
                             context.read<ProfileBloc>().add(ImageLoad());
@@ -59,7 +59,7 @@ class Setting_pagena extends StatelessWidget {
                           },
                         ),
                         TextField(
-                          style: TextStyle(
+                          style:const TextStyle(
                               color: Colors.grey, fontWeight: FontWeight.w200),
                           controller: TextEditingController(text: state.name),
                           onSubmitted: (String name) {
@@ -67,9 +67,10 @@ class Setting_pagena extends StatelessWidget {
                               context.read<ProfileBloc>().add(Change_Profile(
                                   profile: ProfileState(name: name)));
                             }
-                            print("change");
+                          
                           },
-                          decoration: InputDecoration(
+                          decoration:const InputDecoration(
+                            border: UnderlineInputBorder(),
                               labelText: "Name",
                               labelStyle:
                                   TextStyle(fontWeight: FontWeight.bold),
@@ -77,7 +78,10 @@ class Setting_pagena extends StatelessWidget {
                         ),
                         SizedBox(height: 10),
                         TextField(
-                          style: TextStyle(
+
+                          
+                          
+                          style:const TextStyle(
                               fontWeight: FontWeight.w200, color: Colors.grey),
                           onSubmitted: (String email) {
                             if (formkey.currentState!.validate()) {
@@ -86,8 +90,10 @@ class Setting_pagena extends StatelessWidget {
                             }
                           },
                           controller: TextEditingController(text: state.email),
-                          decoration: InputDecoration(
+                          decoration:const InputDecoration(
+                            border: UnderlineInputBorder(),
                               labelText: "Email",
+                              
                               labelStyle:
                                   TextStyle(fontWeight: FontWeight.bold),
                               hintText: "What's your email?"),

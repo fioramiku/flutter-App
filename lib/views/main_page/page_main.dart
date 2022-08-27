@@ -2,6 +2,9 @@ import 'package:abc/database/base_data_tool.dart';
 import 'package:abc/views/chatbot/Chatbot_page.dart';
 
 import 'package:abc/views/home_page/home_main.dart';
+import 'package:abc/views/home_page/widget_tool/time_separate/bloc/separate_bloc.dart';
+import 'package:abc/views/home_page/widget_tool/time_separate/bloc/separate_bloc.dart';
+import 'package:abc/views/home_page/widget_tool/time_separate/ticker.dart';
 
 import 'package:abc/views/main_page/appbarna.dart';
 import 'package:abc/views/me_page/data.dart';
@@ -17,6 +20,7 @@ import 'package:provider/provider.dart';
 
 import '../../database/Transection_data.dart';
 
+import '../home_page/widget_tool/time_separate/bloc/separate_bloc.dart';
 import '../me_page/bloc/profile_bloc.dart';
 
 class Basic_mainpage extends StatelessWidget {
@@ -30,17 +34,16 @@ class Basic_mainpage extends StatelessWidget {
     final clockbloc = BlocProvider<TimemanageBloc>(
       create: (context) => TimemanageBloc(),
     );
+    final separateBloc = BlocProvider<SeparateBloc>(
+        create: (context) => SeparateBloc(ticker: const Ticker()));
 
     return MultiBlocProvider(
-      providers: [
-        profilebloc,
-        clockbloc
-      ],
+      providers: [profilebloc, clockbloc,separateBloc],
       child: MaterialApp(
         title: "fiat",
         home: Nagative_button(),
         color: allcolors[0],
-        theme:maintheme(),
+        theme: maintheme(),
       ),
     );
   }
@@ -52,17 +55,17 @@ class Nagative_button extends StatefulWidget {
   @override
   State<Nagative_button> createState() => _Nagative_buttonState();
 }
-  
+
 class _Nagative_buttonState extends State<Nagative_button> {
   @override
   void initState() {
     context.read<ProfileBloc>().add(Initial_Profile_Event());
     super.initState();
   }
+
   static int selectIndex = 0;
 
- 
-  List<dynamic> page = [Home_page(), chat_page(), Me_page(),Chatbot()];
+  List<dynamic> page = [Home_page(), chat_page(), Me_page(), Chatbot()];
 
   @override
   Widget build(BuildContext context) {
@@ -85,21 +88,21 @@ class _Nagative_buttonState extends State<Nagative_button> {
                 function: () {
                   print('find');
                 })
-               
           ]),
       Appbar_Change(
           title: "Plan",
-          action_button: [build_action(icon: Icon(Icons.add))],
+          action_button: [build_action(icon: const Icon(Icons.add))],
           time_check: true),
       Appbar_Change(title: "Me", action_button: [
         build_action(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             function: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return Setting_pagena();
               }));
             })
-      ]),Appbar_Change(title: "chatbot")
+      ]),
+      Appbar_Change(title: "chatbot")
     ];
 
     return Scaffold(
@@ -109,12 +112,12 @@ class _Nagative_buttonState extends State<Nagative_button> {
         onTap: Change_Page,
         selectedItemColor: allcolors[0],
         unselectedItemColor: Color.fromARGB(31, 0, 204, 255),
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
               icon: Icon(Icons.chat_outlined), label: "Chat"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Me"),
-          BottomNavigationBarItem(icon: Icon(Icons.chat),label: "chatbot")
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: "chatbot")
         ],
         currentIndex: selectIndex,
       ),

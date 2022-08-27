@@ -53,6 +53,8 @@ dependencies:
   hydrated_bloc: ^8.1.0
   flutter_colorpicker: ^1.0.3
   bubble: ^1.2.1
+  table_calendar: ^3.0.6
+  shared_preferences: ^2.0.15
   
   
 
