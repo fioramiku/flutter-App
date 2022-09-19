@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 import 'package:abc/views/plan_main/bloc/timemanage_bloc.dart';
 import 'package:abc/views/plan_main/models/time_models.dart';
@@ -14,85 +13,25 @@ class Workroad extends StatefulWidget {
 }
 
 class _WorkroadState extends State<Workroad> {
-  
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TimemanageBloc, TimemanageState>(
       buildWhen: ((previous, current) => true),
       builder: (context, state) {
         log("buildroad");
-        final TimeOfDay now = TimeOfDay.now();
         final List<models_clock> uselist = state.mclock![state.selectday] ?? [];
 
         return Column(
           children: [
-            
             Expanded(
-              child: ListView.separated(
-                separatorBuilder: ((_, __) => const Divider(
-                      height: 1,
-                    )),
+              child: ListView.builder(
+               
                 itemBuilder: ((_, index) {
                   //rebuild force
-                  return InkWell(
-                    //route page
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return Changedata();
-                      }));
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: (uselist[index].statusIndex == 1)
-                          ? Colors.red
-                          : Colors.blue,),
-                     
-                      height: 50,
-                      child: Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 20,
-                              decoration: BoxDecoration(
-                                  color: uselist[index].color,
-                                  shape: BoxShape.circle),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Center(
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "${uselist[index].starttime}",
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  RichText(
-                                    text: TextSpan(
-                                      text: "${uselist[index].endtime}",
-                                      style: const TextStyle(
-                                          color: Colors.black, fontSize: 10),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            const Flexible(
-                                child: SizedBox(), fit: FlexFit.tight),
-                            IconButton(
-                                onPressed: () {
-                                  context.read<TimemanageBloc>().add(
-                                      Deleteclock(
-                                          models: uselist[index],
-                                          daySelect: state.selectday));
-                                },
-                                icon: const Icon(Icons.settings))
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
+                  return childList(
+                      model: uselist[index],
+                      context: context,
+                      selectday: state.selectday);
                 }),
                 itemCount: uselist.length,
               ),
@@ -102,6 +41,50 @@ class _WorkroadState extends State<Workroad> {
       },
     );
   }
+}
+
+Widget childList(
+    {required models_clock model,
+    required BuildContext context,
+    required DateTime selectday}) {
+  return Card(
+    
+    
+    child: ListTile(
+       shape: RoundedRectangleBorder(
+    
+    borderRadius: BorderRadius.circular(10),
+  ), 
+      
+      
+      leading: Container(
+        width: 20,
+        decoration: BoxDecoration(color: model.color, shape: BoxShape.circle),
+      ),
+      title: Text("title: "+model.title),
+      subtitle: RichText(
+          text: TextSpan(text: "duration",style:Theme.of(context).textTheme.labelSmall, children: <TextSpan>[
+        TextSpan(
+            text: model.starttime.format(context) +
+                " ~ " +
+                model.endtime.format(context))
+      ])),
+      trailing: IconButton(
+          onPressed: () {
+            context
+                .read<TimemanageBloc>()
+                .add(Deleteclock(models: model, daySelect: selectday));
+          },
+          icon: const Icon(Icons.settings)),
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return Changedata(
+            model: model,
+          );
+        }));
+      },
+    ),
+  );
 }
 
         /*

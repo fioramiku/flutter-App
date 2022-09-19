@@ -16,7 +16,7 @@ class Clockplan extends StatefulWidget {
 class _ClockplanState extends State<Clockplan> with TickerProviderStateMixin {
   late Animation<double> animation;
   late AnimationController controller;
-  
+
   final Tween<double> _rotationTween = Tween(begin: 0, end: (2) * math.pi);
   late DateTime _selectday;
 
@@ -61,28 +61,18 @@ class _ClockplanState extends State<Clockplan> with TickerProviderStateMixin {
           children: [
             BlocBuilder<TimemanageBloc, TimemanageState>(
               builder: (context, state) {
-                
-                  _selectday = state.selectday;
+                _selectday = state.selectday;
 
-                  return CustomPaint(
-                    painter: Clock(
-                        models: state.mclock![_selectday] ?? [],
-                        startpos: animation.value,
-                        now: nowtime),
-                    child: Container(),
-                  );
-              
+                return CustomPaint(
+                  painter: Clock(
+                      context: context,
+                      models: state.mclock![_selectday] ?? [],
+                      startpos: animation.value,
+                      now: nowtime),
+                  child: Container(),
+                );
               },
             ),
-            Center(
-              child: Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: CustomShadow,
-                    color: primarycolor,
-                  )),
-            )
           ],
         ));
   }
@@ -92,7 +82,14 @@ class Clock extends CustomPainter {
   final startpos;
   final List<models_clock> models;
   final DateTime now;
-  Clock({required this.startpos, required this.models, required this.now});
+  final BuildContext context;
+  late final int pointelement;
+  void setter(int num) => this.pointelement = num;
+  Clock(
+      {required this.startpos,
+      required this.models,
+      required this.now,
+      required this.context});
 
   double timenow() {
     double time = ((12 * 3600 -
@@ -124,21 +121,17 @@ class Clock extends CustomPainter {
     var linerange = (size.height / 2) - radius;
 
     //paint style data
-
-    var paintfill = Paint()..color = Color.fromARGB(255, 63, 60, 100);
-    var paintc1 = Paint()..color = Color(0xFFF67280);
+    var paintc1 = Paint()..color = Theme.of(context).toggleableActiveColor;
     var paintc2 = Paint()
-      ..color = Color.fromARGB(84, 255, 255, 255)
+      ..color = Colors.grey
       ..strokeWidth = 8
       ..style = PaintingStyle.stroke;
     var paintline = Paint()
-      ..color = Color(0xFFF67280)
-      ..strokeWidth = 2;
-    var paintcircleline = Paint()
-      ..color = Colors.red
-      ..style = PaintingStyle.stroke
+      ..color = Color.fromARGB(166, 115, 115, 115)
       ..strokeWidth = 3;
-    var paintcirclebackground = Paint()..color = primarycolor;
+    
+    var paintcirclebackground = Paint()
+      ..color = Theme.of(context).backgroundColor;
     double checkclockvalue(
         //length of clock
         {required TimeOfDay starttime,
@@ -173,37 +166,45 @@ class Clock extends CustomPainter {
     }
 
     void BuildPaint() {
-      int lenght = models.length;
-      int i = lenght;
-
+      var longmodels = <models_clock>[];
+      List<models_clock> pointmodels = [];
       for (models_clock element in models) {
-        var radiuscircle = ((radius / 2) / lenght) * i + radius / 2;
-        Paint paint = Paint()..color = element.color;
-        if (element.starttime.minute != element.endtime.minute ||
-            element.starttime.hour != element.endtime.hour) {
-          canvas.drawArc(
-              Rect.fromCenter(
-                  center: center,
-                  width: radiuscircle * 2,
-                  height: radiuscircle * 2),
-              -caltime(time: element.starttime) + timenow() + startpos,
-              -checkclockvalue(
-                  starttime: element.starttime, endtime: element.endtime),
-              true,
-              paint);
-          i -= 1;
+        if (element.starttime.minute == element.endtime.minute &&
+            element.starttime.hour == element.endtime.hour) {
+          pointmodels.add(element);
         } else {
-          lenght -= 1;
-          i -= 1;
+          longmodels.add(element);
         }
-        for (models_clock element in models) {
-          if (element.starttime.minute == element.endtime.minute &&
-              element.starttime.hour == element.endtime.hour) {
-            Paint paint = Paint()
-              ..color = element.color
-              ..strokeWidth = 3;
+      }
+      setter(longmodels.length);
+      int lenght = longmodels.length;
+      int i = lenght;
+      for (models_clock element in longmodels) {
+        var _stroksize = (radius / (lenght + 1));
+        var radiuscircle = ((radius) / (lenght + 1)) * i + _stroksize / 2;
+        Paint paint = Paint()
+          ..color = element.color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = _stroksize - 1;
 
-            canvas.drawLine(
+        canvas.drawArc(
+            Rect.fromCenter(
+                center: center,
+                width: radiuscircle * 2,
+                height: radiuscircle * 2),
+            -caltime(time: element.starttime) + timenow() + startpos,
+            -checkclockvalue(
+                starttime: element.starttime, endtime: element.endtime),
+            false,
+            paint);
+        i -= 1;
+      }
+      for (models_clock element in pointmodels) {
+        Paint paint = Paint()
+          ..color = element.color
+          ..strokeWidth = 3;
+
+        /* canvas.drawLine(
                 convert(
                     angle: -caltime(time: element.starttime) +
                         timenow() +
@@ -211,21 +212,35 @@ class Clock extends CustomPainter {
                     radius: radius,
                     center: center),
                 center,
-                paint);
-          }
-        }
+                paint);*/
+        canvas.drawCircle(
+            convert(
+                angle: -caltime(time: element.starttime) + timenow() + startpos,
+                radius: radiusedge,
+                center: center),
+            7,
+            paint);
       }
     }
 
+    ///////text painter ///
+    final textStyle = TextStyle(
+      color: Colors.black,
+      fontSize: 30,
+    );
+
     void BuildLine({required int dot}) {
+      var elementlength = pointelement >= 3 ? pointelement + 1 : 4;
       canvas.drawLine(
           Offset(size.width / 2 - radius, size.height / 2), center, paintline);
-      canvas.drawCircle(Offset(size.width / 2 - radius-5, size.height / 2), 8,
-          paintc1);
-     
+      canvas.drawCircle(
+          Offset(size.width / 2 - radius - 5, size.height / 2), 8, paintc1);
+
+      canvas.drawCircle(center, radius / (elementlength), paintc1);
     }
 
     ////////build
+    ///
 
     canvas.drawArc(
         Rect.fromCenter(
@@ -233,10 +248,68 @@ class Clock extends CustomPainter {
         0,
         2 * math.pi,
         false,
-        paintc2);
-    canvas.drawCircle(center, radius, Paint()..color = primarycolor);
+        paintc2..strokeWidth = 4);
+
+    //canvas.drawCircle(center, radius, Paint()..color = Colors.grey);
+    
+    
+    //draw line number
+    for (int i = 0; i < 12; i++) {
+      if(i%3==0){
+        canvas.drawLine(
+          convert(
+              angle: timenow() + i * (math.pi / 6),
+              radius: radius*9/10,
+              center: center),
+          center,
+          paintline..strokeWidth=2);
+
+      }
+      else{
+        canvas.drawLine(
+          convert(
+              angle: timenow() + i * (math.pi / 6),
+              radius: radius*7/10,
+              center: center),
+          center,
+          paintline..strokeWidth=1);
+
+      }
+      
+    }
     BuildPaint();
     BuildLine(dot: 10);
+
+    var timenum = [0, 6, 12, 18];
+    for (int i = 0; i < 4; i++) {
+      canvas.save();
+
+      var angle = timenow() + ((i) * (math.pi / 2));
+
+      final textSpan = TextSpan(
+        text: timenum[i].toString(),
+        style: Theme.of(context).textTheme.labelSmall,
+      );
+      final textPainter = TextPainter(
+        text: textSpan,
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout(
+        minWidth: 0,
+        maxWidth: size.width,
+      );
+      var d = textPainter.width;
+
+      final offset = convert(angle: angle, radius: radiusedge+d, center: center);
+      final pivot = offset;
+      canvas.translate(pivot.dx, pivot.dy);
+      canvas.rotate(0);
+      canvas.translate(-pivot.dx, -pivot.dy);
+      //canvas.drawCircle(offset, 3, paintc1);
+
+      textPainter.paint(canvas, Offset(offset.dx-(d/2), offset.dy-textPainter.height/2));
+      canvas.restore();
+    }
   }
 
   @override

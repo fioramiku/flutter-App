@@ -7,10 +7,10 @@ abstract class TimemanageEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class Changeclock extends TimemanageEvent {
+class Addclock extends TimemanageEvent {
   final models_clock? newmodels;
   final DateTime day;
-  const Changeclock({this.newmodels, required this.day});
+  const Addclock({this.newmodels, required this.day});
 }
 
 class Deleteclock extends TimemanageEvent {
@@ -19,7 +19,14 @@ class Deleteclock extends TimemanageEvent {
   const Deleteclock({required this.models, required this.daySelect});
 }
 
-class Changeday extends TimemanageEvent{
+class Changeday extends TimemanageEvent {
   final DateTime focusday;
   const Changeday({required this.focusday});
+}
+
+class Changeclock extends TimemanageEvent {
+  final models_clock oldmodel;
+  final models_clock changemodel;
+  final DateTime day;
+  const Changeclock({required this.oldmodel,required this.changemodel, required this.day});
 }

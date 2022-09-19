@@ -19,7 +19,6 @@ class ImageLoad extends ProfileEvent {
   File? file;
 
   Future pickimag() async {
-    print("opendir");
     var file = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (file == null) return;
     final imgTemporary = File(file.path);

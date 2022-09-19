@@ -22,7 +22,7 @@ class _CalendarState extends State<Calendar> {
     DateTime.now(): ["string"],
     DateTime.utc(2022, 7, 26): ["hello"]
   };
-  CalendarFormat _calendarFormat = CalendarFormat.week;
+  CalendarFormat _calendarFormat = CalendarFormat.twoWeeks;
 
   DateTime _selectedDay = DateTime.now();
   List<models_clock> _getEventsForDay(

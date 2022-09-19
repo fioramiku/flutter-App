@@ -11,6 +11,8 @@ import 'package:abc/views/me_page/data.dart';
 import 'package:abc/views/me_page/me.dart';
 import 'package:abc/views/plan_main/Plan_main.dart';
 import 'package:abc/views/plan_main/bloc/timemanage_bloc.dart';
+import 'package:abc/views/todo_page/bloc/todolist_bloc.dart';
+import 'package:abc/views/todo_page/todo_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,14 +38,17 @@ class Basic_mainpage extends StatelessWidget {
     );
     final separateBloc = BlocProvider<SeparateBloc>(
         create: (context) => SeparateBloc(ticker: const Ticker()));
+    final todoBloc = BlocProvider<TodolistBloc>(
+      create: (context) => TodolistBloc(),
+    );
 
     return MultiBlocProvider(
-      providers: [profilebloc, clockbloc,separateBloc],
+      providers: [profilebloc, clockbloc, separateBloc,todoBloc],
       child: MaterialApp(
         title: "fiat",
         home: Nagative_button(),
-        color: allcolors[0],
-        theme: maintheme(),
+        
+        theme: darkTheme()
       ),
     );
   }
@@ -65,7 +70,13 @@ class _Nagative_buttonState extends State<Nagative_button> {
 
   static int selectIndex = 0;
 
-  List<dynamic> page = [Home_page(), chat_page(), Me_page(), Chatbot()];
+  List<dynamic> page = [
+    Home_page(),
+    TodoPage(),
+    chat_page(),
+    Me_page(),
+    Chatbot()
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +100,7 @@ class _Nagative_buttonState extends State<Nagative_button> {
                   print('find');
                 })
           ]),
+      Appbar_Change(title: "todo"),
       Appbar_Change(
           title: "Plan",
           action_button: [build_action(icon: const Icon(Icons.add))],
@@ -110,10 +122,13 @@ class _Nagative_buttonState extends State<Nagative_button> {
       body: page[selectIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: Change_Page,
-        selectedItemColor: allcolors[0],
-        unselectedItemColor: Color.fromARGB(31, 0, 204, 255),
+        selectedItemColor:Theme.of(context).bottomNavigationBarTheme.selectedItemColor ,
+        unselectedItemColor:Theme.of(context).bottomNavigationBarTheme.unselectedItemColor ,
+        
+        
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.work), label: "Todo"),
           BottomNavigationBarItem(
               icon: Icon(Icons.chat_outlined), label: "Chat"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Me"),

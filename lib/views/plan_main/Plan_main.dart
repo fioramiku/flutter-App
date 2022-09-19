@@ -22,7 +22,8 @@ class _chat_pageState extends State<chat_page> {
   TextEditingController conendtime = TextEditingController();
   TextEditingController contitle = TextEditingController();
   int widgetchange = 0;
-  List<Widget> widgetuse = [mainClock(), const Calendar()]; //widgeat changeable
+  int muneindex = 0;
+ //widgeat changeable
 
   @override
   Widget build(BuildContext context) {
@@ -32,113 +33,104 @@ class _chat_pageState extends State<chat_page> {
             onPressed: () => showBottomSheet(
                 context: context,
                 builder: (_) {
-                  return Inputwork(); //add event
+                  return Inputclockwork(); //add event
                 })),
         body: Column(
           children: [
-            Stack(
-              children: [
-                widgetuse[widgetchange],
-                if(widgetchange==0)...{
-                  Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                       Text("changeclock"),
-                      IconButton(
-                          onPressed: () => setState(() {
-                                if (widgetchange == 0) {
-                                  widgetchange = 1;
-                                } else {
-                                  widgetchange = 0;
-                                }
-                              }),
-                          icon: const Icon(Icons.change_circle_outlined,
-                              color: Colors.black, size: 28)),
-                    ],
-                  ),
-                }
-
-                
-              ],
-            ),
-            if(widgetchange==1)...{
-               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                       Text("changeclock"),
-                      IconButton(
-                          onPressed: () => setState(() {
-                                if (widgetchange == 0) {
-                                  widgetchange = 1;
-                                } else {
-                                  widgetchange = 0;
-                                }
-                              }),
-                          icon: const Icon(Icons.change_circle_outlined,
-                              color: Colors.black, size: 28)),
-                    ],
-                  ),
-                
+            const SizedBox(height: 15,),
+            if (widgetchange == 0) ...{
+              Container(
+                decoration: BoxDecoration(
+                    
+                    color:Theme.of(context).appBarTheme.backgroundColor),
+                alignment: Alignment.bottomCenter,
+                child: Clockplan(),
+              ),
+            } else if (widgetchange == 1) ...{
+              const Calendar(),
             },
+            Container(
+             
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  if (widgetchange == 0) ...{
+                    timeNext(),
+                  } else ...{
+                    Flexible(
+                      child: SizedBox(),
+                      fit: FlexFit.tight,
+                    ),
+                    IconButton(
+                        tooltip: "ChangeClock",
+                        onPressed: () => setState(() {
+                              if (widgetchange == 0) {
+                                widgetchange = 1;
+                              } else {
+                                widgetchange = 0;
+                              }
+                            }),
+                        icon: const Icon(Icons.change_circle_outlined,
+                            color: Colors.black, size: 28)),
+                  }
+                ],
+              ),
+            ),
             const Expanded(child: Workroad()),
-            
           ],
         ));
   }
-}
 
-Widget mainClock() {
-  return Column(
-    children: [
-      Container(
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.vertical(
-                top: Radius.zero, bottom: Radius.circular(8)),
-            color: allcolors[0]),
-        alignment: Alignment.bottomCenter,
-        child: const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Clockplan(),
-        ),
-      ),
-      BlocBuilder<TimemanageBloc, TimemanageState>(
-        builder: (context, state) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                  onPressed: () {
-                    context.read<TimemanageBloc>().add(Changeday(
-                        focusday:
-                            state.selectday.add(const Duration(days: -1))));
-                  },
-                  icon: const Icon(Icons.arrow_left,color: Colors.black,)),
-              Container(
-                child: Text(
-                  DateFormat('dd/MM/yyyy').format(state.selectday),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(fontSize: 17),
-                ),
-                decoration:
-                    BoxDecoration(color: Theme.of(context).backgroundColor,borderRadius: BorderRadius.circular(8)),
-                    
+  BlocBuilder<TimemanageBloc, TimemanageState> timeNext() {
+    return BlocBuilder<TimemanageBloc, TimemanageState>(
+      builder: (context, state) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+                onPressed: () {
+                  context.read<TimemanageBloc>().add(Changeday(
+                      focusday: state.selectday.add(const Duration(days: -1))));
+                },
+                icon: const Icon(
+                  Icons.arrow_left,
+                  
+                  size: 25,
+                )),
+            Container(
+              child: Text(
+                DateFormat('dd/MM/yyyy').format(state.selectday),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(fontSize: 17),
               ),
-              IconButton(
-                  onPressed: () {
-                    context.read<TimemanageBloc>().add(Changeday(
-                        focusday:
-                            state.selectday.add(const Duration(days: 1))));
-                  },
-                  icon: const Icon(
-                    Icons.arrow_right,
-                    color: Colors.black,
-                  )),
-            ],
-          );
-        },
-      )
-    ],
-  );
+              
+            ),
+            IconButton(
+                onPressed: () {
+                  context.read<TimemanageBloc>().add(Changeday(
+                      focusday: state.selectday.add(const Duration(days: 1))));
+                },
+                icon: const Icon(
+                  Icons.arrow_right,
+                  
+                )),
+            //change widget to calendar
+            IconButton(
+                tooltip: "ChangeClock",
+                onPressed: () => setState(() {
+                      if (widgetchange == 0) {
+                        widgetchange = 1;
+                      } else {
+                        widgetchange = 0;
+                      }
+                    }),
+                icon: const Icon(Icons.change_circle_outlined,
+                     size: 28)),
+          ],
+        );
+      },
+    );
+  }
 }

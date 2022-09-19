@@ -15,12 +15,13 @@ class TimemanageBloc extends Bloc<TimemanageEvent, TimemanageState> {
       : super(TimemanageState(
             mclock: LinkedHashMap<DateTime, List<models_clock>>(),
             selectday: DateTime.now())) {
-    on<Changeclock>((_updateMap));
+    on<Addclock>((_updateMap));
     on<Deleteclock>((_deleteItem));
     on<Changeday>((_changeDay));
+    on<Changeclock>((_changeData));
   }
 
-  void _updateMap(Changeclock event, Emitter<TimemanageState> emit) {
+  void _updateMap(Addclock event, Emitter<TimemanageState> emit) {
     final _linkmap = LinkedHashMap<DateTime, List<models_clock>?>(
         equals: (DateTime a, DateTime b) => isSameDay(a, b), hashCode: (e) => 1)
       ..addAll(state.mclock!);
@@ -74,7 +75,7 @@ class TimemanageBloc extends Bloc<TimemanageEvent, TimemanageState> {
       return {
         0: unfinList,
         1: finList,
-        2: [...unfinList, ...finList]
+        2: [...finList, ...unfinList]
       };
     }
 
@@ -87,6 +88,7 @@ class TimemanageBloc extends Bloc<TimemanageEvent, TimemanageState> {
       } else {
         _linkmap[selectday] = [z!];
       }
+
       _linkmap[selectday] = ordList(models: _linkmap[selectday])[2];
       log(_linkmap.toString());
       return _linkmap;
@@ -112,5 +114,14 @@ class TimemanageBloc extends Bloc<TimemanageEvent, TimemanageState> {
 
   void _changeDay(Changeday event, Emitter<TimemanageState> emit) {
     emit(state.copyWith(selectday: event.focusday));
+  }
+
+  void _changeData(Changeclock event, Emitter<TimemanageState> emit) {
+    final _linkmap = LinkedHashMap<DateTime, List<models_clock>?>(
+        equals: (DateTime a, DateTime b) => isSameDay(a, b), hashCode: (e) => 1)
+      ..addAll(state.mclock!);
+    _linkmap[event.day]![_linkmap[event.day]!.indexOf(event.oldmodel)] =
+        event.changemodel;
+    emit(state.copyWith(selectday: event.day, mclock: _linkmap));
   }
 }

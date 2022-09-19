@@ -1,14 +1,8 @@
-import 'dart:io';
-import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
-
 import 'bloc/profile_bloc.dart';
-import 'models/profile_models.dart';
+
 
 class Niles {
   String name;

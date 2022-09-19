@@ -41,6 +41,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }));
     log("loaddaata");
     on<ImageLoad>((event, emit) async {
+      
         await event.pickimag();
         emit(state.copyWith(image: event.file));
       },

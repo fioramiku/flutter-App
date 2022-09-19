@@ -28,11 +28,10 @@ class _Me_pageState extends State<Me_page> {
       builder: (context, state) {
         dynamic fileimage =
             (state.image == null) ? NetworkImage("https://w7.pngwing.com/pngs/532/849/png-transparent-user-person-people-profile-account-human-avatar-administrator-worker-employee.png") : FileImage(state.image!);
-        return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          SizedBox(height: 6,),
           Container(
-            decoration: BoxDecoration(
-              color: maintheme().appBarTheme.backgroundColor,
-            ),
+            
             height: MediaQuery.of(context).size.height * 0.25,
             width: MediaQuery.of(context).size.width,
             child: Column(children: [
@@ -49,26 +48,17 @@ class _Me_pageState extends State<Me_page> {
                       fontWeight: FontWeight.normal,
                       fontSize: 20,
                       color: Color.fromARGB(255, 255, 255, 255))),
+             Expanded(
+               child: Row(mainAxisAlignment: MainAxisAlignment.start,
+                 children: [
+                   Card(shape:  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)), child: Container(height: MediaQuery.of(context).size.width/3,width:  MediaQuery.of(context).size.width/3, decoration: BoxDecoration(image: DecorationImage(fit: BoxFit.fill, image: NetworkImage("https://cdn.dribbble.com/users/2330950/screenshots/6128967/media/f2fabefb372f36800c4ed92464cd8ba3.jpg?compress=1&resize=400x300&vertical=top")))),),
+                 ],
+               ),
+             )         
             ]),
           ),
-          Expanded(
-              child: ListView.separated(
-                  itemBuilder: (BuildContext context, int index) {
-                    return InkWell(
-                      onTap: () {},
-                      child: Container(
-                          height: 30,
-                          child: Row(children: [
-                            Image.asset(names[index].Pathimg),
-                            Text(names[index].name)
-                          ])),
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(
-                        height: 1,
-                      ),
-                  itemCount: names.length)),
+         
         ]);
       },
     ));

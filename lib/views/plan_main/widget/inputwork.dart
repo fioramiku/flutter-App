@@ -11,7 +11,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart';
 
-class Inputwork extends StatelessWidget {
+class Inputclockwork extends StatelessWidget {
   TextEditingController constarttime = TextEditingController();
   TextEditingController conendtime = TextEditingController();
   TextEditingController contitle = TextEditingController();
@@ -68,7 +68,7 @@ class Inputwork extends StatelessWidget {
         return Container(
           height: 200,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8), color: allcolors[0]),
+              borderRadius: BorderRadius.circular(8), color:Theme.of(context).bottomSheetTheme.backgroundColor),
           child: Form(
               key: formkey,
               child: Padding(
@@ -108,7 +108,7 @@ class Inputwork extends StatelessWidget {
                             onPressed: () {
                               if (formkey.currentState!.validate() &&
                                   checkopenclock) {
-                                context.read<TimemanageBloc>().add(Changeclock(
+                                context.read<TimemanageBloc>().add(Addclock(
                                     day: state.selectday,
                                     newmodels: models_clock(
                                         title: contitle.text,

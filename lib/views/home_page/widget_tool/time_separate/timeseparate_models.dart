@@ -1,13 +1,13 @@
 import 'package:equatable/equatable.dart';
 
 class TimeseparateModels extends Equatable {
-  final int sectiontime;
-  final int breaktime;
+  final Duration? sectiontime;
+  final Duration? breaktime;
+  final int? looptime;
+  final double? percent;
 
-  const TimeseparateModels({required this.sectiontime, this.breaktime = 0});
+  const TimeseparateModels({this.sectiontime, this.breaktime, this.looptime,this.percent});
 
   @override
-
-  List<Object?> get props => [sectiontime, breaktime];
+  List<Object?> get props => [sectiontime, breaktime, looptime];
 }
-
