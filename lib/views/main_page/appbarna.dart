@@ -25,6 +25,9 @@ AppBar buildWG({
   required int selectIndex,
 }) {
   AppBar appBar = AppBar(
+    
+   
+    toolbarHeight: 40,
     title: Row(
       children: [
         Text(appbar[selectIndex].title),

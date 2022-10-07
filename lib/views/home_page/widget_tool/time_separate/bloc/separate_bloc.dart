@@ -79,11 +79,21 @@ class SeparateBloc extends Bloc<SeparateEvent, SeparateState> {
   void _cooldownSeparate(CooldownEvent event, Emitter<SeparateState> emit) {
     if (state is CooldownState) {
       if (event.models.breaktime!.inSeconds > 0) {
-        emit(CooldownState(
+        if(state.loopnum>0){
+          emit(CooldownState(
             defaultmodels: state.defaultmodels,
             models: TimeseparateModels(breaktime: event.models.breaktime),
             loopnum: state.loopnum));
-      } else {
+
+
+        }
+        else{
+          _cooltickSubscription?.cancel();
+          emit(SeparateInitialState(models: state.defaultmodels, loopnum: state.defaultmodels.looptime!, defaultmodels: state.defaultmodels));
+
+        }
+        
+      } else  {
         _cooltickSubscription?.cancel();
         emit(UsingSeparateState(
             defaultmodels:state.defaultmodels,

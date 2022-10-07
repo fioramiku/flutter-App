@@ -28,3 +28,14 @@ class SwapTodoEvent extends TodolistEvent {
   final int newindex;
   const SwapTodoEvent({required this.oldindex, required this.newindex});
 }
+
+class ChecktodoEvent extends TodolistEvent {
+  final int index;
+  final bool check;
+  const ChecktodoEvent(this.index,this.check);
+
+    @override
+  List<Object> get props => [check];
+}
+
+class InitialEvent extends TodolistEvent {}

@@ -34,8 +34,9 @@ class _Timeseparate_toolState extends State<Timeseparate_tool> {
   Widget build(BuildContext context) {
     final models = context.select((SeparateBloc bloc) => bloc.state.models);
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text('timeseparate'),
+       
         SizedBox(
           height: MediaQuery.of(context).size.height / 27,
         ),
@@ -102,7 +103,7 @@ Widget widSeparate() {
                 .read<SeparateBloc>()
                 .add(BuildSeperate(models: state.models));
           },
-          child: Text("Reading"));
+          child: Text("Stop"));
     } else {
       return SizedBox();
     }

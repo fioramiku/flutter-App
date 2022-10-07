@@ -7,6 +7,8 @@ import 'package:abc/views/home_page/widget_tool/time_separate/bloc/separate_bloc
 import 'package:abc/views/home_page/widget_tool/time_separate/ticker.dart';
 
 import 'package:abc/views/main_page/appbarna.dart';
+import 'package:abc/views/main_page/cubit/theme_dart_cubit.dart';
+import 'package:abc/views/me_page/cubit/chart_cubit.dart';
 import 'package:abc/views/me_page/data.dart';
 import 'package:abc/views/me_page/me.dart';
 import 'package:abc/views/plan_main/Plan_main.dart';
@@ -41,16 +43,32 @@ class Basic_mainpage extends StatelessWidget {
     final todoBloc = BlocProvider<TodolistBloc>(
       create: (context) => TodolistBloc(),
     );
+    final CtCubit =
+        BlocProvider<ChartCubit>(create: ((context) => ChartCubit()));
+    final ThemeCubit = BlocProvider<ThemeDartCubit>(
+      create: ((context) => ThemeDartCubit()),
+    );
 
     return MultiBlocProvider(
-      providers: [profilebloc, clockbloc, separateBloc,todoBloc],
-      child: MaterialApp(
-        title: "fiat",
-        home: Nagative_button(),
-        
-        theme: darkTheme()
-      ),
-    );
+        providers: [
+          profilebloc,
+          clockbloc,
+          separateBloc,
+          todoBloc,
+          CtCubit,
+          ThemeCubit
+        ],
+        child: Builder(
+          builder: (context) {
+            return MaterialApp(
+              title: "fiat",
+              home: Nagative_button(),
+              theme: (context.watch<ThemeDartCubit>().state)
+                  ? darkTheme()
+                  : lightTheme(),
+            );
+          }
+        ));
   }
 }
 
@@ -68,9 +86,11 @@ class _Nagative_buttonState extends State<Nagative_button> {
     super.initState();
   }
 
+  final List<int> _emptyApp = [];
+
   static int selectIndex = 0;
 
-  List<dynamic> page = [
+  List<dynamic> page = const [
     Home_page(),
     TodoPage(),
     chat_page(),
@@ -118,21 +138,23 @@ class _Nagative_buttonState extends State<Nagative_button> {
     ];
 
     return Scaffold(
-      appBar: buildWG(appbar: Using, selectIndex: selectIndex),
+      appBar: (!_emptyApp.contains(selectIndex))
+          ? buildWG(appbar: Using, selectIndex: selectIndex)
+          : null,
       body: page[selectIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: Change_Page,
-        selectedItemColor:Theme.of(context).bottomNavigationBarTheme.selectedItemColor ,
-        unselectedItemColor:Theme.of(context).bottomNavigationBarTheme.unselectedItemColor ,
-        
-        
+        selectedItemColor:
+            Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+        unselectedItemColor:
+            Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.work), label: "Todo"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.chat_outlined), label: "Chat"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Me"),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: "chatbot")
+              icon: Icon(Icons.calendar_month), label: "Calendar"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Mine"),
+        //  BottomNavigationBarItem(icon: Icon(Icons.chat), label: "chatbot")
         ],
         currentIndex: selectIndex,
       ),

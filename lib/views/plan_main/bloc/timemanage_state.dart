@@ -1,18 +1,58 @@
 part of 'timemanage_bloc.dart';
 
-class TimemanageState {
+abstract class TimemanageState extends Equatable {
+  const TimemanageState();
+
+  @override
+  List<Object> get props => [];
+
+  
+}
+
+class BuildClockState extends TimemanageState{
   final DateTime selectday;
   final LinkedHashMap<DateTime, List<models_clock>?>? mclock;
-  const TimemanageState({required this.selectday, this.mclock});
+  
+  const BuildClockState({required this.selectday, this.mclock});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'selectday': selectday.toString(),
+      'mclock': Map.from(mclock!.map((key, value) => MapEntry(
+          key.toString(),
+          Map.fromIterable(value!,
+              key: (element) => value.indexOf(element).toString(),
+              value: (element) =>
+                  (element is models_clock) ? element.toMap() : null))))
+    };
+  }
+
+  factory BuildClockState.formMap(Map<String, dynamic> map) {
+    List<models_clock>? l2m(Map map) {
+      var list = <models_clock>[];
+      map.forEach((key, value) {
+          list.add(models_clock.formMap(Map.from(value)));
+      });
+      return list;
+    }
+
+
+    return BuildClockState(
+        selectday: DateTime.parse((map['selectday'] !=null)?map['selectday']:DateTime.now().toString()),
+        mclock:(map['mclock']!=null)? LinkedHashMap.from(Map.from(map['mclock']).map((key, value) =>
+            MapEntry(DateTime.parse(key),l2m(value as Map)
+                ))): LinkedHashMap() );
+  }
+
   int con2min({required TimeOfDay timeOfDay}) {
     int time = timeOfDay.hour * 60 + timeOfDay.minute;
     return time;
   }
 
-  TimemanageState copyWith(
-      { LinkedHashMap<DateTime, List<models_clock>?>? mclock,
+  BuildClockState copyWith(
+      {LinkedHashMap<DateTime, List<models_clock>?>? mclock,
       required DateTime selectday}) {
-    return TimemanageState(mclock: mclock??this.mclock, selectday: selectday);
+    return BuildClockState(mclock: mclock ?? this.mclock, selectday: selectday);
   }
 
   List<models_clock> ordertime(
@@ -60,13 +100,18 @@ class TimemanageState {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TimemanageState &&
+      other is BuildClockState &&
           runtimeType == other.runtimeType &&
           mclock == other.mclock &&
           selectday == other.selectday;
 
   @override
   int get hashCode => mclock.hashCode ^ selectday.hashCode;
+}
+
+class InitialClockState extends TimemanageState{
+  
+
 }
 
   

@@ -109,7 +109,7 @@ class Inputclockwork extends StatelessWidget {
                               if (formkey.currentState!.validate() &&
                                   checkopenclock) {
                                 context.read<TimemanageBloc>().add(Addclock(
-                                    day: state.selectday,
+                                    day: (state is BuildClockState)?state.selectday:DateTime.now(),
                                     newmodels: models_clock(
                                         title: contitle.text,
                                         starttime: BegintimeOfDay,
