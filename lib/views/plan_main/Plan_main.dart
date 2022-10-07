@@ -16,6 +16,12 @@ class chat_page extends StatefulWidget {
 }
 
 class _chat_pageState extends State<chat_page> {
+  @override
+  void initState() {
+    context.read<TimemanageBloc>().add(InitialClockEvent());
+    super.initState();
+  }
+
   final GlobalKey<ScaffoldState> _scaffold = GlobalKey<ScaffoldState>();
   final formkey = GlobalKey<FormState>();
   TextEditingController constarttime = TextEditingController();
@@ -23,7 +29,7 @@ class _chat_pageState extends State<chat_page> {
   TextEditingController contitle = TextEditingController();
   int widgetchange = 0;
   int muneindex = 0;
- //widgeat changeable
+  //widgeat changeable
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +43,13 @@ class _chat_pageState extends State<chat_page> {
                 })),
         body: Column(
           children: [
-            const SizedBox(height: 15,),
+            const SizedBox(
+              height: 15,
+            ),
             if (widgetchange == 0) ...{
               Container(
                 decoration: BoxDecoration(
-                    
-                    color:Theme.of(context).appBarTheme.backgroundColor),
+                    color: Theme.of(context).appBarTheme.foregroundColor),
                 alignment: Alignment.bottomCenter,
                 child: Clockplan(),
               ),
@@ -50,7 +57,6 @@ class _chat_pageState extends State<chat_page> {
               const Calendar(),
             },
             Container(
-             
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -84,52 +90,54 @@ class _chat_pageState extends State<chat_page> {
   BlocBuilder<TimemanageBloc, TimemanageState> timeNext() {
     return BlocBuilder<TimemanageBloc, TimemanageState>(
       builder: (context, state) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-                onPressed: () {
-                  context.read<TimemanageBloc>().add(Changeday(
-                      focusday: state.selectday.add(const Duration(days: -1))));
-                },
-                icon: const Icon(
-                  Icons.arrow_left,
-                  
-                  size: 25,
-                )),
-            Container(
-              child: Text(
-                DateFormat('dd/MM/yyyy').format(state.selectday),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(fontSize: 17),
+        if (state is BuildClockState) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                  onPressed: () {
+                    context.read<TimemanageBloc>().add(Changeday(
+                        focusday:
+                            state.selectday.add(const Duration(days: -1))));
+                  },
+                  icon: const Icon(
+                    Icons.arrow_left,
+                    size: 25,
+                  )),
+              Container(
+                child: Text(
+                  DateFormat('dd/MM/yyyy').format(state.selectday),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(fontSize: 17),
+                ),
               ),
-              
-            ),
-            IconButton(
-                onPressed: () {
-                  context.read<TimemanageBloc>().add(Changeday(
-                      focusday: state.selectday.add(const Duration(days: 1))));
-                },
-                icon: const Icon(
-                  Icons.arrow_right,
-                  
-                )),
-            //change widget to calendar
-            IconButton(
-                tooltip: "ChangeClock",
-                onPressed: () => setState(() {
-                      if (widgetchange == 0) {
-                        widgetchange = 1;
-                      } else {
-                        widgetchange = 0;
-                      }
-                    }),
-                icon: const Icon(Icons.change_circle_outlined,
-                     size: 28)),
-          ],
-        );
+              IconButton(
+                  onPressed: () {
+                    context.read<TimemanageBloc>().add(Changeday(
+                        focusday:
+                            state.selectday.add(const Duration(days: 1))));
+                  },
+                  icon: const Icon(
+                    Icons.arrow_right,
+                  )),
+              //change widget to calendar
+              IconButton(
+                  tooltip: "ChangeClock",
+                  onPressed: () => setState(() {
+                        if (widgetchange == 0) {
+                          widgetchange = 1;
+                        } else {
+                          widgetchange = 0;
+                        }
+                      }),
+                  icon: const Icon(Icons.change_circle_outlined, size: 28)),
+            ],
+          );
+        } else {
+          return SizedBox();
+        }
       },
     );
   }

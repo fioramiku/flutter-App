@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../main_page/cubit/theme_dart_cubit.dart';
 import 'bloc/profile_bloc.dart';
 
 
@@ -14,6 +15,7 @@ class Niles {
 class Setting_pagena extends StatelessWidget {
   final formkey = GlobalKey<FormState>();
   late var lastfile;
+  TextEditingController conname=TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,7 @@ class Setting_pagena extends StatelessWidget {
                         TextField(
                           style:const TextStyle(
                               color: Colors.grey, fontWeight: FontWeight.w200),
-                          controller: TextEditingController(text: state.name),
+                          controller: conname..text=state.name??"",
                           onSubmitted: (String name) {
                             if (formkey.currentState!.validate()) {
                               context.read<ProfileBloc>().add(Change_Profile(
@@ -94,7 +96,21 @@ class Setting_pagena extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
+                  ),Builder(
+                    builder: (context) {
+                      final state = context.select((ThemeDartCubit cubit)=>cubit.state);
+                      return Row(
+                        children: [Text((state)?"  darkTheme":"  lightTheme"),
+                          Switch( value:  state , onChanged: ((_) =>BlocProvider.of<ThemeDartCubit>(context).themeEvent())),
+                        ],
+                      );
+                    }
+                  ), TextButton(onPressed: (){
+                    if(formkey.currentState!.validate()){ context.read<ProfileBloc>().add(Change_Profile(
+                                  profile: ProfileState(name: conname.text)));
+
+                    }
+                  }, child: Text("data"))
                 ],
               ),
             );

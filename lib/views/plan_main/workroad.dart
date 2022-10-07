@@ -18,26 +18,30 @@ class _WorkroadState extends State<Workroad> {
     return BlocBuilder<TimemanageBloc, TimemanageState>(
       buildWhen: ((previous, current) => true),
       builder: (context, state) {
-        log("buildroad");
-        final List<models_clock> uselist = state.mclock![state.selectday] ?? [];
+        if (state is BuildClockState) {
+          log("buildroad");
+          final List<models_clock> uselist =
+              state.mclock![state.selectday] ?? [];
 
-        return Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-               
-                itemBuilder: ((_, index) {
-                  //rebuild force
-                  return childList(
-                      model: uselist[index],
-                      context: context,
-                      selectday: state.selectday);
-                }),
-                itemCount: uselist.length,
-              ),
-            )
-          ],
-        );
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemBuilder: ((_, index) {
+                    //rebuild force
+                    return childList(
+                        model: uselist[index],
+                        context: context,
+                        selectday: state.selectday);
+                  }),
+                  itemCount: uselist.length,
+                ),
+              )
+            ],
+          );
+        } else {
+          return SizedBox();
+        }
       },
     );
   }
@@ -48,27 +52,25 @@ Widget childList(
     required BuildContext context,
     required DateTime selectday}) {
   return Card(
-    
-    
     child: ListTile(
-       shape: RoundedRectangleBorder(
-    
-    borderRadius: BorderRadius.circular(10),
-  ), 
-      
-      
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
       leading: Container(
         width: 20,
         decoration: BoxDecoration(color: model.color, shape: BoxShape.circle),
       ),
-      title: Text("title: "+model.title),
+      title: Text( model.title),
       subtitle: RichText(
-          text: TextSpan(text: "duration",style:Theme.of(context).textTheme.labelSmall, children: <TextSpan>[
-        TextSpan(
-            text: model.starttime.format(context) +
-                " ~ " +
-                model.endtime.format(context))
-      ])),
+          text: TextSpan(
+              text: "",
+              style: Theme.of(context).textTheme.labelSmall,
+              children: <TextSpan>[
+            TextSpan(
+                text: model.starttime.format(context) +
+                    " ~ " +
+                    model.endtime.format(context))
+          ])),
       trailing: IconButton(
           onPressed: () {
             context
@@ -80,6 +82,7 @@ Widget childList(
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return Changedata(
             model: model,
+            selectday:selectday
           );
         }));
       },

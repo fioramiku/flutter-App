@@ -60,19 +60,25 @@ class _ClockplanState extends State<Clockplan> with TickerProviderStateMixin {
         child: Stack(
           children: [
             BlocBuilder<TimemanageBloc, TimemanageState>(
-              builder: (context, state) {
+                builder: (context, state) {
+              if (state is BuildClockState) {
                 _selectday = state.selectday;
 
-                return CustomPaint(
-                  painter: Clock(
-                      context: context,
-                      models: state.mclock![_selectday] ?? [],
-                      startpos: animation.value,
-                      now: nowtime),
-                  child: Container(),
+                return Padding(
+                  padding: const EdgeInsets.all(6.0),
+                  child: CustomPaint(
+                    painter: Clock(
+                        context: context,
+                        models: state.mclock![_selectday] ?? [],
+                        startpos: animation.value,
+                        now: nowtime),
+                    child: Container(),
+                  ),
                 );
-              },
-            ),
+              } else {
+                return Text('null');
+              }
+            })
           ],
         ));
   }
@@ -83,13 +89,14 @@ class Clock extends CustomPainter {
   final List<models_clock> models;
   final DateTime now;
   final BuildContext context;
-  late final int pointelement;
+  late int pointelement;
   void setter(int num) => this.pointelement = num;
   Clock(
       {required this.startpos,
       required this.models,
       required this.now,
-      required this.context});
+      required this.context
+      });
 
   double timenow() {
     double time = ((12 * 3600 -
@@ -129,7 +136,7 @@ class Clock extends CustomPainter {
     var paintline = Paint()
       ..color = Color.fromARGB(166, 115, 115, 115)
       ..strokeWidth = 3;
-    
+
     var paintcirclebackground = Paint()
       ..color = Theme.of(context).backgroundColor;
     double checkclockvalue(
@@ -251,40 +258,35 @@ class Clock extends CustomPainter {
         paintc2..strokeWidth = 4);
 
     //canvas.drawCircle(center, radius, Paint()..color = Colors.grey);
-    
-    
+
     //draw line number
     for (int i = 0; i < 12; i++) {
-      if(i%3==0){
+      if (i % 3 == 0) {
         canvas.drawLine(
-          convert(
-              angle: timenow() + i * (math.pi / 6),
-              radius: radius*9/10,
-              center: center),
-          center,
-          paintline..strokeWidth=2);
-
-      }
-      else{
+            convert(
+                angle: timenow() + i * (math.pi / 6),
+                radius: radius * 9 / 10,
+                center: center),
+            center,
+            paintline..strokeWidth = 2);
+      } else {
         canvas.drawLine(
-          convert(
-              angle: timenow() + i * (math.pi / 6),
-              radius: radius*7/10,
-              center: center),
-          center,
-          paintline..strokeWidth=1);
-
+            convert(
+                angle: timenow() + i * (math.pi / 6),
+                radius: radius * 7 / 10,
+                center: center),
+            center,
+            paintline..strokeWidth = 1);
       }
-      
     }
     BuildPaint();
     BuildLine(dot: 10);
 
-    var timenum = [0, 6, 12, 18];
+    var timenum = [24, 6, 12, 18];
     for (int i = 0; i < 4; i++) {
       canvas.save();
 
-      var angle = timenow() + ((i) * (math.pi / 2));
+      var angle = timenow() -((i) * (math.pi / 2));
 
       final textSpan = TextSpan(
         text: timenum[i].toString(),
@@ -300,14 +302,16 @@ class Clock extends CustomPainter {
       );
       var d = textPainter.width;
 
-      final offset = convert(angle: angle, radius: radiusedge+d, center: center);
+      final offset =
+          convert(angle: angle, radius: radiusedge + d, center: center);
       final pivot = offset;
       canvas.translate(pivot.dx, pivot.dy);
       canvas.rotate(0);
       canvas.translate(-pivot.dx, -pivot.dy);
       //canvas.drawCircle(offset, 3, paintc1);
 
-      textPainter.paint(canvas, Offset(offset.dx-(d/2), offset.dy-textPainter.height/2));
+      textPainter.paint(canvas,
+          Offset(offset.dx - (d / 2), offset.dy - textPainter.height / 2));
       canvas.restore();
     }
   }

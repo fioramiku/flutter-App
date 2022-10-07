@@ -33,7 +33,7 @@ class _Home_pageState extends State<Home_page> {
                 shrinkWrap: true,
                 children: [
                   Container(
-                    height: 50,
+                    
                     child: Text("Now Work:"),
                   ),
                   checktool(toolnum: 1),
@@ -104,20 +104,8 @@ class CardItem extends StatelessWidget {
                       ),
                     ])),
               )),
-          openBuilder: (context, action) => Scaffold(
-                body: CustomScrollView(slivers: <Widget>[
-                  SliverWidget(
-                      centerTitle: false,
-                      src:
-                          "https://images.axa-contento-118412.eu/ktaxa/1e3533d0-ea5a-4e27-8bc9-eee3a8375edf_Smart+working+photo.jpg?auto=compress,format",
-                      text: "Tip for Study"),
-                      
-                  SliverToBoxAdapter(
-                      child: Container(
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(500)),
-                    margin: EdgeInsets.all(20),
-                    child: Text(
+          openBuilder: (context, action) {
+            var text2 = Text(
                         """ we are here to share some beneficial study tips that can help you develop a strong foundation to perform well on your exams.
             
             1. Study in manageable blocks of time.
@@ -140,11 +128,26 @@ class CardItem extends StatelessWidget {
             
             10. Put your cell phone away while you study.
             
-            """),
+            """);
+            return Scaffold(
+                body: CustomScrollView(slivers: <Widget>[
+                  SliverWidget(
+                      centerTitle: false,
+                      src:
+                          "https://images.axa-contento-118412.eu/ktaxa/1e3533d0-ea5a-4e27-8bc9-eee3a8375edf_Smart+working+photo.jpg?auto=compress,format",
+                      text: "Tip for Study"),
+                      
+                  SliverToBoxAdapter(
+                      child: Container(
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(500)),
+                    margin: EdgeInsets.all(20),
+                    child: text2,
                   ))
                 ]),
               
-              )),
+              );
+          }),
     );
   }
 }

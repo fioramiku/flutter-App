@@ -1,9 +1,12 @@
+import 'package:abc/views/todo_page/bloc/todolist_bloc.dart';
 import 'package:abc/views/todo_page/inputdoto.dart';
+import 'package:abc/views/todo_page/todo_history.dart';
 import 'package:abc/views/todo_page/todo_view.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({Key? key}) : super(key: key);
@@ -14,8 +17,14 @@ class TodoPage extends StatefulWidget {
 
 class _TodoPageState extends State<TodoPage> with TickerProviderStateMixin {
   @override
+  void initState() {
+    context.read<TodolistBloc>().add(InitialEvent());
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    TabController _tabcontroller = TabController(length: 2, vsync: this);
+    
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () =>
@@ -25,39 +34,7 @@ class _TodoPageState extends State<TodoPage> with TickerProviderStateMixin {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-             
-              width: double.infinity,
-              child: TabBar(
-                labelColor: Theme.of(context).appBarTheme.backgroundColor,
-                unselectedLabelColor: Colors.grey,
-                indicatorColor: Theme.of(context).appBarTheme.backgroundColor,
-                  
-                  controller: _tabcontroller,
-                  tabs: <Tab>[
-                    Tab(
-                      text: 'Working',
-                    ),
-                    Tab(text: 'Work')
-                  ]),
-            ),
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          Container(
-            width: double.maxFinite,
-            height: 300,
-            child: TabBarView(controller: _tabcontroller, children: <Widget>[
-              TodoView(),
-              Container(
-                  child: Center(
-                child: Text("text"),
-              )),
-            ]),
-          ),
+          Expanded(child: TodoView())
         ],
       ),
     );

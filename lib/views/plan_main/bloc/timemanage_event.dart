@@ -30,3 +30,5 @@ class Changeclock extends TimemanageEvent {
   final DateTime day;
   const Changeclock({required this.oldmodel,required this.changemodel, required this.day});
 }
+class InitialClockEvent extends TimemanageEvent{
+}

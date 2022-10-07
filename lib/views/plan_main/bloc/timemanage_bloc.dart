@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:developer';
 
+import 'package:abc/database/Database_api.dart';
 import 'package:abc/views/plan_main/models/time_models.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -11,117 +12,146 @@ part 'timemanage_event.dart';
 part 'timemanage_state.dart';
 
 class TimemanageBloc extends Bloc<TimemanageEvent, TimemanageState> {
-  TimemanageBloc()
-      : super(TimemanageState(
-            mclock: LinkedHashMap<DateTime, List<models_clock>>(),
-            selectday: DateTime.now())) {
+  TimemanageBloc() : super(InitialClockState()) {
     on<Addclock>((_updateMap));
     on<Deleteclock>((_deleteItem));
     on<Changeday>((_changeDay));
     on<Changeclock>((_changeData));
+    on<InitialClockEvent>(_initialclockevent);
+  }
+
+  void _initialclockevent(
+      InitialClockEvent event, Emitter<TimemanageState> emit) async {
+    var database = await Database_api().dbload(2);
+    if(database!=null)emit(database);
   }
 
   void _updateMap(Addclock event, Emitter<TimemanageState> emit) {
-    final _linkmap = LinkedHashMap<DateTime, List<models_clock>?>(
-        equals: (DateTime a, DateTime b) => isSameDay(a, b), hashCode: (e) => 1)
-      ..addAll(state.mclock!);
+    final state = this.state;
+    if (state is BuildClockState) {
+      final _linkmap = LinkedHashMap<DateTime, List<models_clock>?>(
+          equals: (DateTime a, DateTime b) => isSameDay(a, b),
+          hashCode: (e) => 1)
+        ..addAll(state.mclock!);
 
-    int con2min({required TimeOfDay timeOfDay}) {
-      int time = timeOfDay.hour * 60 + timeOfDay.minute;
-      return time;
-    }
+      int con2min({required TimeOfDay timeOfDay}) {
+        int time = timeOfDay.hour * 60 + timeOfDay.minute;
+        return time;
+      }
 
-    Map<int, List<models_clock>> ordList(
-        {required List<models_clock>? models}) {
-      final int now = con2min(timeOfDay: TimeOfDay.now());
+      Map<int, List<models_clock>> ordList(
+          {required List<models_clock>? models}) {
+        final int now = con2min(timeOfDay: TimeOfDay.now());
 
-      List<models_clock> finList = [];
-      List<models_clock> unfinList = [];
-      for (models_clock i in models!) {
-        final int dif1 = con2min(timeOfDay: i.starttime) - now;
-        final int dif2 = con2min(timeOfDay: i.endtime) - now;
-        if (dif1 > 0) {
-          if (dif2 > 0) {
-            i.statusIndex = 1;
-            unfinList.add(i);
+        List<models_clock> finList = [];
+        List<models_clock> unfinList = [];
+        for (models_clock i in models!) {
+          final int dif1 = con2min(timeOfDay: i.starttime) - now;
+          final int dif2 = con2min(timeOfDay: i.endtime) - now;
+          if (dif1 > 0) {
+            if (dif2 > 0) {
+              i.stateIndex = 1;
+              unfinList.add(i);
+            } else {
+              i.stateIndex = 0;
+              finList.add(i);
+            }
           } else {
-            i.statusIndex = 0;
-            finList.add(i);
+            if (dif2 > 0) {
+              i.stateIndex = 0;
+              finList.add(i);
+            } else {
+              i.stateIndex = 1;
+              unfinList.add(i);
+            }
+          }
+        }
+        int dataset(
+          models_clock models,
+        ) {
+          int a = con2min(timeOfDay: models.starttime);
+          int check = a - now;
+          if (a < now) {
+            return 3600 - (check).abs();
+          } else {
+            return check;
+          }
+        }
+
+        unfinList.sort(((a, b) => dataset(a).compareTo(dataset(b))));
+        finList.sort(((a, b) => dataset(a).compareTo(dataset(b))));
+        return {
+          0: unfinList,
+          1: finList,
+          2: [...finList, ...unfinList]
+        };
+      }
+
+      LinkedHashMap<DateTime, List<models_clock>?> addMap(
+          {models_clock? z, required DateTime selectday}) {
+        if (_linkmap[selectday] != null) {
+          if (z != null) {
+            _linkmap[selectday]!.add(z);
           }
         } else {
-          if (dif2 > 0) {
-            i.statusIndex = 0;
-            finList.add(i);
-          } else {
-            i.statusIndex = 1;
-            unfinList.add(i);
-          }
+          _linkmap[selectday] = [z!];
         }
-      }
-      int dataset(
-        models_clock models,
-      ) {
-        int a = con2min(timeOfDay: models.starttime);
-        int check = a - now;
-        if (a < now) {
-          return 3600 - (check).abs();
-        } else {
-          return check;
-        }
+
+        _linkmap[selectday] = ordList(models: _linkmap[selectday])[2];
+        log(_linkmap.toString());
+        return _linkmap;
       }
 
-      unfinList.sort(((a, b) => dataset(a).compareTo(dataset(b))));
-      finList.sort(((a, b) => dataset(a).compareTo(dataset(b))));
-      return {
-        0: unfinList,
-        1: finList,
-        2: [...finList, ...unfinList]
-      };
+      log((state.mclock == _linkmap).toString());
+
+      emit(state.copyWith(
+          mclock: addMap(z: event.newmodels, selectday: event.day),
+          selectday: state.selectday));
+
+      update();
     }
-
-    LinkedHashMap<DateTime, List<models_clock>?> addMap(
-        {models_clock? z, required DateTime selectday}) {
-      if (_linkmap[selectday] != null) {
-        if (z != null) {
-          _linkmap[selectday]!.add(z);
-        }
-      } else {
-        _linkmap[selectday] = [z!];
-      }
-
-      _linkmap[selectday] = ordList(models: _linkmap[selectday])[2];
-      log(_linkmap.toString());
-      return _linkmap;
-    }
-
-    log((state.mclock == _linkmap).toString());
-
-    emit(state.copyWith(
-        mclock: addMap(z: event.newmodels, selectday: event.day),
-        selectday: state.selectday));
   }
 
   void _deleteItem(Deleteclock event, Emitter<TimemanageState> emit) {
-    final _linkmap = LinkedHashMap<DateTime, List<models_clock>?>(
-        equals: (DateTime a, DateTime b) => isSameDay(a, b), hashCode: (e) => 1)
-      ..addAll(state.mclock!);
-    _linkmap[state.selectday]!.remove(event.models);
+    final state = this.state;
+    if (state is BuildClockState) {
+      final _linkmap = LinkedHashMap<DateTime, List<models_clock>?>(
+          equals: (DateTime a, DateTime b) => isSameDay(a, b),
+          hashCode: (e) => 1)
+        ..addAll(state.mclock!);
+      _linkmap[state.selectday]!.remove(event.models);
 
-    log((state.mclock == _linkmap).toString());
+      log((state.mclock == _linkmap).toString());
 
-    emit(state.copyWith(selectday: state.selectday, mclock: _linkmap));
+      emit(state.copyWith(selectday: state.selectday, mclock: _linkmap));
+      update();
+    }
   }
 
   void _changeDay(Changeday event, Emitter<TimemanageState> emit) {
-    emit(state.copyWith(selectday: event.focusday));
+    final state = this.state;
+    if (state is BuildClockState) {
+      emit(state.copyWith(selectday: event.focusday));
+      update();
+    }
   }
 
   void _changeData(Changeclock event, Emitter<TimemanageState> emit) {
-    final _linkmap = LinkedHashMap<DateTime, List<models_clock>?>(
-        equals: (DateTime a, DateTime b) => isSameDay(a, b), hashCode: (e) => 1)
-      ..addAll(state.mclock!);
-    _linkmap[event.day]![_linkmap[event.day]!.indexOf(event.oldmodel)] =
-        event.changemodel;
-    emit(state.copyWith(selectday: event.day, mclock: _linkmap));
+    final state = this.state;
+    if (state is BuildClockState) {
+      final _linkmap = LinkedHashMap<DateTime, List<models_clock>?>(
+          equals: (DateTime a, DateTime b) => isSameDay(a, b),
+          hashCode: (e) => 1)
+        ..addAll(state.mclock!);
+      _linkmap[event.day]![_linkmap[event.day]!.indexOf(event.oldmodel)] =
+          event.changemodel;
+      emit(state.copyWith(selectday: event.day, mclock: _linkmap));
+      update();
+    }
+  }
+
+  void update() async {
+    var db = Database_api();
+    await db.dbAdd(state, 2);
   }
 }

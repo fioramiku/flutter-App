@@ -36,7 +36,7 @@ class _InputdurationState extends State<Inputduration> {
         builder: (context, state) {
       return Container(
         decoration: BoxDecoration(
-            color: Theme.of(context).appBarTheme.backgroundColor,
+            color: Theme.of(context).appBarTheme.foregroundColor,
             borderRadius: BorderRadius.circular(15)),
         child: Form(
             key: formkey,

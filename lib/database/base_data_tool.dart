@@ -22,15 +22,22 @@ List<BoxShadow> CustomShadow = [
 ThemeData darkTheme() {
   var base = ThemeData.dark();
   return base.copyWith(
-    elevatedButtonTheme: ElevatedButtonThemeData(style: ButtonStyle( shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-    RoundedRectangleBorder(
-      
-      borderRadius: BorderRadius.circular(18.0),
-      
-    )))),
-    textTheme: GoogleFonts.robotoSlabTextTheme(base.textTheme),
+    appBarTheme: AppBarTheme(backgroundColor: base.cardColor),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+      )))),
+      textTheme: GoogleFonts.robotoSlabTextTheme(base.textTheme),
       bottomNavigationBarTheme:
           BottomNavigationBarThemeData(selectedItemColor: Colors.white));
+}
+
+ThemeData lightTheme() {
+  var base = ThemeData.light();
+  return base.copyWith(appBarTheme: AppBarTheme(backgroundColor: Colors.blue), textTheme: GoogleFonts.robotoSlabTextTheme(base.textTheme), bottomNavigationBarTheme:
+          BottomNavigationBarThemeData(selectedItemColor: Colors.blue,unselectedItemColor: Colors.black12));
 }
 
 ThemeData maintheme() {
